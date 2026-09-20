@@ -219,7 +219,7 @@
 // =======================================================
 
 const DECOR_TOKENS = ["·","•","⋆","✦","⟡","—","~","˗","¯","_"];
-const CN_CHARS = ["的","一","是","在","不","了","有","和","人","中","大","国","我","以","要","他"];
+const CN_CHARS = ["的","一","是","ใน","不","了","有","和","人","中","大","国","我","以","要","他"];
 const PHONE_PREFIX = ["061","062","063","064","065","081","082","083","084","085","086","087","088","089","091","092","093","094","095","098"];
 const DEFAULT_BASES = ["หมู่ 7 ตำบลกันจุ เสริมสวย มิ้น", "ซับไม้แดง ติดถนนใหญ่", "หมู่ 3 ท่าโรง บ้านสองชั้น"];
 
@@ -462,7 +462,7 @@ function loadSettings() {
   } catch(e) {}
 }
 
-// --- ฝั่งซ้าย: แสดงลิสต์อำเภอทั้งหมด ---
+// --- ฝั่งซ้าย: แสดงลิสต์อำเภอทั้งหมด (ตัด อ. ออกตอนคัดลอก) ---
 function onRegionChange() {
   const region = document.getElementById('distRegion').value;
   const provRow = document.getElementById('distProvinceRow');
@@ -523,11 +523,13 @@ function listAllDistricts() {
   box.innerHTML = '';
 
   results.forEach((displayText, idx) => {
+    // ตัด อ. ออกตอนคัดลอก เช่น "อ.บางระจัน" -> "บางระจัน"
+    const cleanCopyText = displayText.replace(/^อ\.\s*/, '');
     let row = document.createElement('div');
     row.className = 'result-item-row';
     row.innerHTML = `
       <span class="result-item-text"><span style="color:var(--text-dim);">#${idx+1}</span> &nbsp; ${displayText}</span>
-      <button class="row-copy-btn" onclick="clipCopy('${displayText}')">📋</button>
+      <button class="row-copy-btn" onclick="clipCopy('${cleanCopyText}')">📋</button>
     `;
     box.appendChild(row);
   });
@@ -535,7 +537,9 @@ function listAllDistricts() {
 
 function copyAllDistricts() {
   if (_lastDistrictList.length === 0) return alert("ยังไม่ได้แสดงข้อมูลอำเภอครับ");
-  clipCopy(_lastDistrictList.join('\n'));
+  // ตัด อ. ออกทุกรายการตอนกดคัดลอกทั้งหมด
+  const cleaned = _lastDistrictList.map(d => d.replace(/^อ\.\s*/, ''));
+  clipCopy(cleaned.join('\n'));
 }
 
 // --- ฝั่งขวา: สุ่มชุดข้อมูลหลัก (Farm Core Generator) ---
