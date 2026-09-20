@@ -182,12 +182,12 @@
           <button class="btn-primary" onclick="toggleFarmQR()" style="flex:1; background:rgba(0,180,255,0.15); border-color:#00b4ff; color:#80d8ff; font-size:13px;">📱 เปิด QR</button>
         </div>
 
-        <!-- โหมด Auto -->
+        <!-- โหมด Auto (ทำงานตลอดเวลา ไม่ต้องติ๊ก) -->
         <div style="margin-top:14px; padding:12px; border-radius:10px; background:rgba(255,200,0,0.05); border:1px solid rgba(255,200,0,0.2); display:flex; justify-content:space-between; align-items:center;">
-          <label style="font-size:12px; color:#FFD600; display:flex; align-items:center; gap:6px;">
-            <input type="checkbox" id="chkAuto" onchange="toggleAuto(); saveSettings();" /> 🔄 สุ่มออโต้ทุก 1 นาที
-          </label>
-          <span id="autoCountdown" style="font-family:var(--font_mono); font-size:12px; color:var(--text-dim);">--:--</span>
+          <div style="font-size:12px; color:#FFD600; font-weight:600; display:flex; align-items:center; gap:6px;">
+            🔄 สุ่มออโต้ทุก 1 นาที (ทำงานอัตโนมัติ)
+          </div>
+          <span id="autoCountdown" style="font-family:var(--font_mono); font-size:12px; color:#FFD600; font-weight:bold;">--:--</span>
         </div>
       </div>
 
@@ -433,7 +433,6 @@ function saveSettings() {
     chkAz: document.getElementById('chkAz').checked,
     chkDecor: document.getElementById('chkDecor').checked,
     chkCn: document.getElementById('chkCn').checked,
-    chkAuto: document.getElementById('chkAuto').checked,
   };
   localStorage.setItem('tao_web_settings', JSON.stringify(settings));
 }
@@ -459,15 +458,11 @@ function loadSettings() {
       if (s.chkAz !== undefined) document.getElementById('chkAz').checked = s.chkAz;
       if (s.chkDecor !== undefined) document.getElementById('chkDecor').checked = s.chkDecor;
       if (s.chkCn !== undefined) document.getElementById('chkCn').checked = s.chkCn;
-      if (s.chkAuto !== undefined) {
-        document.getElementById('chkAuto').checked = s.chkAuto;
-        toggleAuto();
-      }
     }
   } catch(e) {}
 }
 
-// --- ฝั่งซ้าย: แสดงลิสต์อำเภอทั้งหมด (เอาชื่อจังหวัดออกแล้ว) ---
+// --- ฝั่งซ้าย: แสดงลิสต์อำเภอทั้งหมด ---
 function onRegionChange() {
   const region = document.getElementById('distRegion').value;
   const provRow = document.getElementById('distProvinceRow');
@@ -542,7 +537,6 @@ function copyAllDistricts() {
   if (_lastDistrictList.length === 0) return alert("ยังไม่ได้แสดงข้อมูลอำเภอครับ");
   clipCopy(_lastDistrictList.join('\n'));
 }
-
 
 // --- ฝั่งขวา: สุ่มชุดข้อมูลหลัก (Farm Core Generator) ---
 let _lastFarmData = [];
@@ -631,29 +625,31 @@ function toggleFarmQR() {
   }
 }
 
-// --- ระบบ Auto Random ---
+// --- ระบบ Auto Random (ทำงานอัตโนมัติ 1 นาทีต่อเนื่อง) ---
 let autoInterval = null;
 let countdownInterval = null;
 let secondsLeft = 60;
 
-function toggleAuto() {
-  const chk = document.getElementById('chkAuto');
-  if(chk.checked) {
+function startAutoRandom() {
+  if (autoInterval) clearInterval(autoInterval);
+  if (countdownInterval) clearInterval(countdownInterval);
+
+  secondsLeft = 60;
+  generateFarmData(); // สุ่มรอบแรกทันทีเมื่อเปิดหน้าเว็บ
+  updateTimerUI();
+
+  // วนรอบสุ่มทุก 60 วินาที
+  autoInterval = setInterval(() => {
     secondsLeft = 60;
     generateFarmData();
-    updateTimerUI();
+  }, 60000);
 
-    autoInterval = setInterval(() => { secondsLeft = 60; generateFarmData(); }, 60000);
-    countdownInterval = setInterval(() => {
-      secondsLeft--;
-      if(secondsLeft < 0) secondsLeft = 0;
-      updateTimerUI();
-    }, 1000);
-  } else {
-    clearInterval(autoInterval);
-    clearInterval(countdownInterval);
-    document.getElementById('autoCountdown').textContent = "--:--";
-  }
+  // ตัวนับถอยหลังแสดงผลบนหน้าจอ
+  countdownInterval = setInterval(() => {
+    secondsLeft--;
+    if (secondsLeft < 0) secondsLeft = 0;
+    updateTimerUI();
+  }, 1000);
 }
 
 function updateTimerUI() {
@@ -664,9 +660,10 @@ function updateTimerUI() {
 
 // เริ่มต้นเปิดเว็บ
 window.onload = function() {
-  loadSettings(); // โหลดค่าที่เซ็ตไว้เดิม
+  loadSettings();
   onRegionChange();
   listAllDistricts();
+  startAutoRandom(); // เริ่มระบบสุ่มอัตโนมัติทันที
 };
 </script>
 
