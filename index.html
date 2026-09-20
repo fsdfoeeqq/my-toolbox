@@ -5,54 +5,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>TAO TOOLBOX - Web App Edition</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@400;600;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --accent:#00D4FF; --accent-dim:rgba(0,212,255,0.15);
-    --bg:#030a18; --bg_card:rgba(5,15,35,0.9); --border:rgba(0,212,255,0.2);
-    --text:#b8d4f0; --text-dim:rgba(100,160,200,0.6);
+    --bg:#030a18; --bg_card:rgba(5,15,35,0.92); --border:rgba(0,212,255,0.22);
+    --text:#b8d4f0; --text-dim:rgba(100,160,200,0.65);
     --font_main:'Outfit',sans-serif; --font_mono:'JetBrains Mono',monospace;
   }
-  body { background-color: var(--bg); color: var(--text); font-family: var(--font_main); min-height: 100vh; overflow-y: auto; }
+  body { background-color: var(--bg); color: var(--text); font-family: var(--font_main); min-height: 100vh; overflow-y: auto; padding-bottom: 40px; }
 
-  .container { width: 100%; max-width: 900px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-  .header { text-align: center; margin-bottom: 5px; }
-  .logo-text { font-size: 26px; font-weight: 900; background: linear-gradient(135deg,var(--accent),#0066ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .tagline { font-size: 12px; color: var(--text-dim); font-family: var(--font_mono); }
+  .container { width: 100%; max-width: 960px; margin: 0 auto; padding: 18px; display: flex; flex-direction: column; gap: 18px; }
+  .header { text-align: center; margin-bottom: 2px; }
+  .logo-text { font-size: 28px; font-weight: 900; letter-spacing: 1px; background: linear-gradient(135deg,var(--accent),#0066ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .tagline { font-size: 12px; color: var(--text-dim); font-family: var(--font_mono); margin-top: 2px; }
 
-  .panel { background: var(--bg_card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; backdrop-filter: blur(20px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-  .panel-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
+  .panel { background: var(--bg_card); border: 1px solid var(--border); border-radius: 18px; padding: 22px; backdrop-filter: blur(20px); box-shadow: 0 10px 35px rgba(0,0,0,0.45); }
+  .panel-title { font-size: 16px; font-weight: 800; color: var(--accent); display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+  .panel-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 14px; }
 
   .input-row { margin-bottom: 12px; }
-  .input-label { display: block; font-size: 12px; font-weight: 700; color: rgba(200,220,240,0.8); margin-bottom: 6px; }
-  .input-field, select.input-field { width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: var(--text); font-family: var(--font_mono); font-size: 13px; outline: none; }
-  .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+  .input-label { display: block; font-size: 12px; font-weight: 700; color: rgba(200,220,240,0.85); margin-bottom: 6px; }
+  .input-field, select.input-field { width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: var(--text); font-family: var(--font_mono); font-size: 13px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
 
-  .grid-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .panel-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
-  @media(max-width: 768px) { .panel-split { grid-template-columns: 1fr; } }
+  .grid-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media(max-width: 768px) { .grid-two { grid-template-columns: 1fr; } }
 
-  .btn-primary { width: 100%; padding: 14px; border: 1px solid var(--accent); border-radius: 8px; background: linear-gradient(135deg,var(--accent-dim),rgba(0,0,0,0.2)); color: var(--accent); font-family: var(--font_main); font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-  .btn-primary:hover { filter: brightness(1.2); transform: translateY(-1px); }
-  .btn-sub { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.4); color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-primary { width: 100%; padding: 15px 20px; border: 1px solid var(--accent); border-radius: 10px; background: linear-gradient(135deg,rgba(0,212,255,0.2),rgba(0,102,255,0.12)); color: var(--accent); font-family: var(--font_main); font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(0,212,255,0.15); text-align: center; }
+  .btn-primary:hover { filter: brightness(1.25); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,212,255,0.25); }
+  
+  .btn-sub { width: 100%; padding: 14px 18px; border: 1px solid var(--border); border-radius: 10px; background: rgba(0,0,0,0.45); color: var(--text); font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center; }
   .btn-sub:hover { border-color: var(--accent); color: var(--accent); }
 
-  .cbtn { flex: 1; min-width: 100px; padding: 10px; border: 1px solid rgba(0,255,136,0.3); border-radius: 8px; background: rgba(0,255,136,0.1); color: #00ff88; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
-  .cbtn:hover { background: rgba(0,255,136,0.2); }
+  /* ปุ่มคัดลอกไซส์ใหญ่พิเศษ ชัดเจน กดง่าย */
+  .cbtn-lg { flex: 1; min-width: 130px; padding: 14px 20px; border: 1.5px solid rgba(0,255,136,0.35); border-radius: 10px; background: rgba(0,255,136,0.12); color: #00ff88; font-weight: 800; font-size: 14px; cursor: pointer; transition: all 0.2s; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+  .cbtn-lg:hover { background: rgba(0,255,136,0.24); filter: brightness(1.2); transform: translateY(-1px); }
 
-  .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-  .result-title { font-size: 14px; font-weight: bold; color: var(--accent); }
-  .count-badge { font-size: 11px; background: var(--accent-dim); color: var(--accent); padding: 3px 8px; border-radius: 12px; }
+  .row-copy-btn { padding: 9px 16px; background: rgba(0,212,255,0.15); border: 1px solid var(--accent); color: var(--accent); border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.2s; min-width: 55px; text-align: center; }
+  .row-copy-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 12px rgba(0,212,255,0.4); }
 
-  .result-rows-box { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
-  .result-item-row { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); gap: 10px; }
-  .result-item-text { font-family: var(--font_mono); font-size: 12px; word-break: break-all; color: #fff; flex: 1; }
-  .row-copy-btn { padding: 6px 12px; background: rgba(0,212,255,0.15); border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-  .row-copy-btn:hover { background: var(--accent); color: #000; }
+  .btn-copy-phone { background: rgba(0,255,136,0.12); border-color: #00ff88; color: #00ff88; font-size: 12px; padding: 8px 14px; font-weight: 700; }
+  .btn-copy-phone:hover { background: #00ff88; color: #000; }
+  .btn-copy-addr { background: rgba(255,200,0,0.12); border-color: #ffcc00; color: #ffcc00; font-size: 12px; padding: 8px 14px; font-weight: 700; }
+  .btn-copy-addr:hover { background: #ffcc00; color: #000; }
+  .btn-copy-all { background: rgba(0,212,255,0.16); border-color: var(--accent); color: var(--accent); font-size: 13px; padding: 9px 18px; font-weight: 800; }
+  .btn-copy-all:hover { background: var(--accent); color: #000; }
 
-  .notice { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #00ff88; color: #000; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 13px; z-index: 999; animation: fadein 0.3s; }
+  .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .result-title { font-size: 14px; font-weight: 800; color: var(--accent); }
+  .count-badge { font-size: 11px; background: var(--accent-dim); color: var(--accent); padding: 4px 10px; border-radius: 14px; font-family: var(--font_mono); font-weight: bold; }
+
+  .result-rows-box { max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .result-item-row { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.35); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); gap: 12px; }
+  .result-item-text { font-family: var(--font_mono); font-size: 12.5px; word-break: break-all; color: #fff; flex: 1; line-height: 1.5; }
+
+  .notice { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #00ff88; color: #000; padding: 10px 24px; border-radius: 30px; font-weight: 800; font-size: 14px; z-index: 9999; box-shadow: 0 4px 20px rgba(0,255,136,0.4); animation: fadein 0.3s; }
   .hidden { display: none !important; }
   @keyframes fadein { from { opacity: 0; top: 0; } to { opacity: 1; top: 20px; } }
 </style>
@@ -62,200 +72,282 @@
 <div class="container">
   <div class="header">
     <div class="logo-text">TAO TOOLBOX</div>
-    <div class="tagline">Serverless Web App · Farm Core Inside</div>
+    <div class="tagline">Serverless Edition · Unlimited Address Combinatorics</div>
   </div>
 
-  <div class="panel-split">
-
-    <!-- ─── คอลัมน์ซ้าย: ข้อความใช้ประจำ + รายชื่ออำเภอ/เขต ─── -->
-    <div>
-      <div class="panel">
-        <div class="panel-title" style="margin-bottom: 12px;">📌 ข้อความใช้ประจำ</div>
-        <div class="input-row">
-          <label class="input-label">ข้อความที่ 1 (ค่าเริ่มต้น)</label>
-          <div style="display:flex; gap:8px;">
-            <input type="text" id="freqText1" class="input-field" value="บ้านซับบอน ต.กันจุ" oninput="saveSettings()" />
-            <button class="row-copy-btn" onclick="clipCopy(document.getElementById('freqText1').value)">📋</button>
-          </div>
-        </div>
-        <div class="input-row">
-          <label class="input-label">ข้อความที่ 2</label>
-          <div style="display:flex; gap:8px;">
-            <input type="text" id="freqText2" class="input-field" placeholder="เพิ่มข้อความใช้บ่อย..." oninput="saveSettings()" />
-            <button class="row-copy-btn" onclick="clipCopy(document.getElementById('freqText2').value)">📋</button>
-          </div>
-        </div>
-        <div class="input-row">
-          <label class="input-label">ข้อความที่ 3</label>
-          <div style="display:flex; gap:8px;">
-            <input type="text" id="freqText3" class="input-field" placeholder="เพิ่มข้อความใช้บ่อย..." oninput="saveSettings()" />
-            <button class="row-copy-btn" onclick="clipCopy(document.getElementById('freqText3').value)">📋</button>
-          </div>
-        </div>
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 🥇 อันดับที่ 1: 🎲 สุ่มข้อมูลแบบครบชุด (Farm Core Generator) -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div>
+    <div class="panel" style="margin-bottom: 16px; border-color: rgba(0,212,255,0.4);">
+      <div class="panel-title">
+        <span>🎲 สุ่มข้อมูลแบบครบชุด (Farm Core Unlimited)</span>
+        <span class="count-badge" id="farmBadge">0 ชุด</span>
       </div>
 
-      <div class="panel">
-        <div class="result-header" style="border:none; padding:0; margin-bottom:12px;">
-          <span class="panel-title">🗺️ รายชื่ออำเภอ/เขต (ครบทุกจังหวัด)</span>
-          <span class="count-badge" id="distCountBadge">0 รายการ</span>
-        </div>
-
+      <div class="grid-two">
         <div class="input-row">
-          <label class="input-label">พื้นที่</label>
-          <select id="distRegion" class="input-field" onchange="onRegionChange(); saveSettings();">
-            <option value="all">ทั่วประเทศ</option>
-            <option value="bangkok">กรุงเทพฯ</option>
-            <option value="central">ภาคกลาง</option>
-            <option value="north">ภาคเหนือ</option>
-            <option value="northeast">ภาคอีสาน</option>
-            <option value="east">ภาคตะวันออก</option>
-            <option value="west">ภาคตะวันตก</option>
-            <option value="south">ภาคใต้</option>
-          </select>
+          <label class="input-label">🔢 จำนวนชุด</label>
+          <input type="number" id="farmCount" class="input-field" value="1" min="1" max="50" oninput="saveSettings()" />
         </div>
-
-        <div class="input-row hidden" id="distProvinceRow">
-          <label class="input-label">📍 จังหวัด</label>
-          <select id="distProvince" class="input-field" onchange="saveSettings()">
-            <option value="">ทั้งภาค</option>
-          </select>
-        </div>
-
-        <div class="grid-two" style="margin-top:14px;">
-          <button class="btn-primary" onclick="listAllDistricts()">📋 แสดงอำเภอทั้งหมด</button>
-          <button class="btn-sub" onclick="copyAllDistricts()" style="background:rgba(0,255,136,0.1); border-color:rgba(0,255,136,0.3); color:#00ff88;">📝 คัดลอกทั้งหมด</button>
-        </div>
-
-        <div class="result-rows-box" id="distResultBox" style="margin-top:15px; max-height:220px;"></div>
-      </div>
-    </div>
-
-    <!-- ─── คอลัมน์ขวา: สุ่มชุดข้อมูลหลัก (Farm Core) ─── -->
-    <div>
-      <div class="panel">
-        <div class="panel-title">🎲 สุ่มข้อมูลแบบครบชุด (จำลอง Farm Core)</div>
-
-        <div class="grid-two">
-          <div class="input-row">
-            <label class="input-label">🔢 จำนวนชุด</label>
-            <input type="number" id="farmCount" class="input-field" value="1" min="1" max="50" oninput="saveSettings()" />
-          </div>
-          <div class="input-row">
-            <label class="input-label">💪 ความแรง (เฉพาะภาษาไทย)</label>
-            <select id="farmStrength" class="input-field" onchange="saveSettings()">
-              <option value="น้อย">น้อย</option>
-              <option value="ปกติ" selected>ปกติ</option>
-              <option value="มาก">มาก</option>
-            </select>
-          </div>
-        </div>
-
         <div class="input-row">
           <label class="input-label">🌍 ประเภทที่อยู่</label>
           <select id="farmAddrType" class="input-field" onchange="saveSettings()">
-            <option value="th">🇹🇭 ไทย (ชุด 1)</option>
-            <option value="en_random" selected>🌍 อังกฤษ (สุ่มประเทศ)</option>
-            <option value="en_id">🇮🇩 อินโดนีเซีย (Indonesia)</option>
-            <option value="en_ph">🇵🇭 ฟิลิปปินส์ (Philippines)</option>
-            <option value="en_my">🇲🇾 มาเลเซีย (Malaysia)</option>
-            <option value="en_vn">🇻🇳 เวียดนาม (Vietnam)</option>
+            <option value="en_random" selected>🌍 อังกฤษ (สุ่มประเทศ - สหรัฐ/อังกฤษ/ออสเตรเลีย/แคนาดา/เอเชีย)</option>
             <option value="en_us">🇺🇸 สหรัฐอเมริกา (United States)</option>
+            <option value="en_uk">🇬🇧 สหราชอาณาจักร (United Kingdom)</option>
+            <option value="en_ca">🇨🇦 แคนาดา (Canada)</option>
+            <option value="en_au">🇦🇺 ออสเตรเลีย (Australia)</option>
+            <option value="en_sg">🇸🇬 สิงคโปร์ (Singapore)</option>
+            <option value="en_my">🇲🇾 มาเลเซีย (Malaysia)</option>
+            <option value="en_ph">🇵🇭 ฟิลิปปินส์ (Philippines)</option>
+            <option value="en_id">🇮🇩 อินโดนีเซีย (Indonesia)</option>
+            <option value="en_vn">🇻🇳 เวียดนาม (Vietnam)</option>
+            <option value="th">🇹🇭 ไทย (ชุด 1 ดัดแปลงคำ)</option>
           </select>
-        </div>
-
-        <div class="input-row">
-          <label class="input-label">✏️ ข้อความฐาน (จะถูกนำไปแทรกในที่อยู่ด้วย)</label>
-          <input type="text" id="farmBase" class="input-field" value="เสริม สวย มิ้น" placeholder="เช่น หมู่ 7 ตำบลกันจุ เสริมสวย มิ้น" oninput="saveSettings()" />
-        </div>
-
-        <div class="grid-two" style="margin-bottom:8px;">
-          <label style="font-size:12px; display:flex; align-items:center; gap:6px;"><input type="checkbox" id="chkHouse" checked onchange="saveSettings()" /> 🏠 สุ่มบ้านเลขที่</label>
-          <label style="font-size:12px; display:flex; align-items:center; gap:6px;"><input type="checkbox" id="chkAz" checked onchange="saveSettings()" /> 🔤 แทรก A-Z</label>
-        </div>
-        <div class="grid-two" style="margin-bottom:12px;">
-          <label style="font-size:12px; display:flex; align-items:center; gap:6px;"><input type="checkbox" id="chkDecor" onchange="saveSettings()" /> ✦ แทรกตกแต่ง</label>
-          <label style="font-size:12px; display:flex; align-items:center; gap:6px;"><input type="checkbox" id="chkCn" onchange="saveSettings()" /> 🀄 แทรกตัวจีน</label>
-        </div>
-
-        <div style="display:flex; gap:8px;">
-          <button class="btn-primary" onclick="generateFarmData()" style="flex:2;">🎲 สุ่มทั้งหมด</button>
-          <button class="btn-primary" onclick="toggleFarmQR()" style="flex:1; background:rgba(0,180,255,0.15); border-color:#00b4ff; color:#80d8ff; font-size:13px;">📱 เปิด QR</button>
-        </div>
-
-        <!-- โหมด Auto (ทำงานตลอดเวลา ไม่ต้องติ๊ก) -->
-        <div style="margin-top:14px; padding:12px; border-radius:10px; background:rgba(255,200,0,0.05); border:1px solid rgba(255,200,0,0.2); display:flex; justify-content:space-between; align-items:center;">
-          <div style="font-size:12px; color:#FFD600; font-weight:600; display:flex; align-items:center; gap:6px;">
-            🔄 สุ่มออโต้ทุก 1 นาที (ทำงานอัตโนมัติ)
-          </div>
-          <span id="autoCountdown" style="font-family:var(--font_mono); font-size:12px; color:#FFD600; font-weight:bold;">--:--</span>
         </div>
       </div>
 
-      <div class="panel">
-        <div class="result-header">
-          <span class="result-title">📋 ผลลัพธ์ข้อมูล</span>
-          <span class="count-badge" id="farmBadge">0 ชุด</span>
+      <div class="grid-two">
+        <div class="input-row">
+          <label class="input-label">✏️ ข้อความฐาน (จะถูกนำไปแทรกกระจายในที่อยู่อัตโนมัติ)</label>
+          <input type="text" id="farmBase" class="input-field" value="เสริม สวย มิ้น" placeholder="เช่น หมู่ 7 ตำบลกันจุ เสริมสวย มิ้น" oninput="saveSettings()" />
         </div>
-        <div style="display:flex; gap:8px; margin-bottom:10px;">
-          <button class="cbtn" onclick="copyNotepad()">📋 ก๊อปปี้แบบรวม (เพื่อส่ง)</button>
+        <div class="input-row">
+          <label class="input-label">💪 ความแรงการดัดแปลง (เฉพาะภาษาไทย)</label>
+          <select id="farmStrength" class="input-field" onchange="saveSettings()">
+            <option value="น้อย">น้อย</option>
+            <option value="ปกติ" selected>ปกติ</option>
+            <option value="มาก">มาก</option>
+          </select>
         </div>
+      </div>
 
-        <textarea id="farmNotepad" class="input-field hidden" rows="5"></textarea>
+      <div class="grid-two" style="margin-bottom:8px;">
+        <label style="font-size:12.5px; display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" id="chkHouse" checked onchange="saveSettings()" /> 🏠 สุ่มบ้านเลขที่ / ห้อง / อาคาร</label>
+        <label style="font-size:12.5px; display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" id="chkAz" checked onchange="saveSettings()" /> 🔤 แทรกตัวอักษร A-Z</label>
+      </div>
+      <div class="grid-two" style="margin-bottom:14px;">
+        <label style="font-size:12.5px; display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" id="chkDecor" onchange="saveSettings()" /> ✦ แทรกอักษรตกแต่งสัญลักษณ์</label>
+        <label style="font-size:12.5px; display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" id="chkCn" onchange="saveSettings()" /> 🀄 แทรกอักษรจีน</label>
+      </div>
 
-        <div id="farmQrSection" class="hidden" style="text-align:center; padding:10px; background:#fff; border-radius:10px; margin-bottom:10px;"></div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-primary" onclick="generateFarmData()" style="flex:2;">🎲 สุ่มทันที</button>
+        <button class="btn-primary" onclick="toggleFarmQR()" style="flex:1; background:rgba(0,180,255,0.18); border-color:#00b4ff; color:#80d8ff;">📱 เปิด/ปิด QR</button>
+      </div>
 
-        <div id="farmResultBox" class="result-rows-box"></div>
+      <!-- โหมด Auto (ทำงานอัตโนมัติตลอดเวลา) -->
+      <div style="margin-top:14px; padding:12px 16px; border-radius:12px; background:rgba(255,200,0,0.06); border:1px solid rgba(255,200,0,0.25); display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:12.5px; color:#FFD600; font-weight:700; display:flex; align-items:center; gap:6px;">
+          🔄 ระบบสุ่มอัตโนมัติทำงานทุก 1 นาที (ไม่ซ้ำล้านรูปแบบ)
+        </div>
+        <span id="autoCountdown" style="font-family:var(--font_mono); font-size:13px; color:#FFD600; font-weight:800;">--:--</span>
       </div>
     </div>
 
+    <!-- แผงผลลัพธ์ข้อมูล -->
+    <div class="panel">
+      <div class="result-header">
+        <span class="result-title">📋 ผลลัพธ์ข้อมูลชุดล่าสุด</span>
+        <button class="cbtn-lg" onclick="copyNotepad()">📋 คัดลอกแบบรวมทั้งหมด (ส่งง่าย)</button>
+      </div>
+
+      <textarea id="farmNotepad" class="input-field hidden" rows="5"></textarea>
+      <div id="farmQrSection" class="hidden" style="text-align:center; padding:14px; background:#fff; border-radius:12px; margin-bottom:12px;"></div>
+      <div id="farmResultBox" class="result-rows-box"></div>
+    </div>
   </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 🥈 อันดับที่ 2: 📌 ข้อความใช้ประจำ                          -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div class="panel">
+    <div class="panel-title">📌 ข้อความใช้ประจำ (กดคัดลอกด่วน)</div>
+    
+    <div class="input-row">
+      <label class="input-label">ข้อความที่ 1</label>
+      <div style="display:flex; gap:10px;">
+        <input type="text" id="freqText1" class="input-field" value="บ้านซับบอน ต.กันจุ" oninput="saveSettings()" />
+        <button class="cbtn-lg" style="flex:none; width:110px;" onclick="clipCopy(document.getElementById('freqText1').value)">📋 ก๊อปปี้</button>
+      </div>
+    </div>
+
+    <div class="input-row">
+      <label class="input-label">ข้อความที่ 2</label>
+      <div style="display:flex; gap:10px;">
+        <input type="text" id="freqText2" class="input-field" placeholder="เพิ่มข้อความใช้บ่อย..." oninput="saveSettings()" />
+        <button class="cbtn-lg" style="flex:none; width:110px;" onclick="clipCopy(document.getElementById('freqText2').value)">📋 ก๊อปปี้</button>
+      </div>
+    </div>
+
+    <div class="input-row">
+      <label class="input-label">ข้อความที่ 3</label>
+      <div style="display:flex; gap:10px;">
+        <input type="text" id="freqText3" class="input-field" placeholder="เพิ่มข้อความใช้บ่อย..." oninput="saveSettings()" />
+        <button class="cbtn-lg" style="flex:none; width:110px;" onclick="clipCopy(document.getElementById('freqText3').value)">📋 ก๊อปปี้</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 🥉 อันดับที่ 3: 🗺️ รายชื่ออำเภอ/เขต (ครบทุกจังหวัด)         -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div class="panel">
+    <div class="panel-title">
+      <span>🗺️ รายชื่ออำเภอ/เขต (ตัด อ. ออกตอนคัดลอก)</span>
+      <span class="count-badge" id="distCountBadge">0 รายการ</span>
+    </div>
+
+    <div class="grid-two">
+      <div class="input-row">
+        <label class="input-label">พื้นที่ภูมิภาค</label>
+        <select id="distRegion" class="input-field" onchange="onRegionChange(); saveSettings();">
+          <option value="all">ทั่วประเทศ</option>
+          <option value="bangkok">กรุงเทพฯ</option>
+          <option value="central">ภาคกลาง</option>
+          <option value="north">ภาคเหนือ</option>
+          <option value="northeast">ภาคอีสาน</option>
+          <option value="east">ภาคตะวันออก</option>
+          <option value="west">ภาคตะวันตก</option>
+          <option value="south">ภาคใต้</option>
+        </select>
+      </div>
+
+      <div class="input-row hidden" id="distProvinceRow">
+        <label class="input-label">📍 จังหวัด</label>
+        <select id="distProvince" class="input-field" onchange="saveSettings()">
+          <option value="">ทั้งภาค</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid-two" style="margin-top:8px;">
+      <button class="btn-primary" onclick="listAllDistricts()">📋 แสดงรายชื่ออำเภอ</button>
+      <button class="cbtn-lg" onclick="copyAllDistricts()">📝 คัดลอกอำเภอทั้งหมด</button>
+    </div>
+
+    <div class="result-rows-box" id="distResultBox" style="margin-top:14px; max-height:260px;"></div>
+  </div>
+
 </div>
 
-<div id="toastNotice" class="notice hidden">✅ คัดลอกแล้ว!</div>
+<div id="toastNotice" class="notice hidden">✅ คัดลอกสำเร็จ!</div>
 
 <script>
 // =======================================================
-// 1. ฐานข้อมูล
+// 1. ฐานข้อมูลอักขระ & ตกแต่ง
 // =======================================================
-
-const DECOR_TOKENS = ["·","•","⋆","✦","⟡","—","~","˗","¯","_"];
-const CN_CHARS = ["的","一","是","ใน","不","了","有","和","人","中","大","国","我","以","要","他"];
-const PHONE_PREFIX = ["061","062","063","064","065","081","082","083","084","085","086","087","088","089","091","092","093","094","095","098"];
+const DECOR_TOKENS = ["·","•","⋆","✦","⟡","—","~","˗","¯","_","|","°","*","•","⋄","⟠","★","☆","✧"];
+const CN_CHARS = ["的","一","是","在","不","了","有","和","人","中","大","国","我","以","要","他","来","用","们","生","到","作","地","于","出","就","分","对","成","会","可","主","发","年","动","同","工","也","能","下","过","民","商","店","路","号","栋","楼","室","门","街","区","城"];
+const PHONE_PREFIX = ["061","062","063","064","065","066","067","068","069","081","082","083","084","085","086","087","088","089","091","092","093","094","095","096","097","098","099"];
 const DEFAULT_BASES = ["หมู่ 7 ตำบลกันจุ เสริมสวย มิ้น", "ซับไม้แดง ติดถนนใหญ่", "หมู่ 3 ท่าโรง บ้านสองชั้น"];
 
-const EN_ADDRESS_POOLS = {
-    "Indonesia": {
-        cities: ["Jakarta","Bandung","Surabaya","Medan","Denpasar","Yogyakarta"],
-        regions: ["DKI Jakarta","West Java","East Java","North Sumatra","Bali"],
-        streets: ["Sudirman","Thamrin","Gatot Subroto","Diponegoro","Ahmad Yani"],
-        extras: ["Kel.","Kec.","RT","RW"], postal: [10110, 99999]
-    },
-    "Philippines": {
-        cities: ["Quezon City","Makati","Taguig","Cebu City","Davao City"],
-        regions: ["Metro Manila","Cebu","Davao del Sur","Laguna"],
-        streets: ["Rizal Ave","Bonifacio St","Ayala Ave","Osmeña Blvd"],
-        extras: ["Barangay","Brgy."], postal: [4000, 9811]
-    },
-    "Malaysia": {
-        cities: ["Kuala Lumpur","Petaling Jaya","Shah Alam","George Town"],
-        regions: ["Selangor","Kuala Lumpur","Penang","Johor"],
-        streets: ["Jalan Tun Razak","Jalan Ampang","Jalan Sultan Ismail"],
-        extras: ["Taman","Persiaran","Lorong"], postal: [10000, 98000]
-    },
-    "Vietnam": {
-        cities: ["Ho Chi Minh City","Hanoi","Da Nang","Hai Phong"],
-        regions: ["District 1","District 3","District 7","Ba Dinh"],
-        streets: ["Nguyen Hue","Le Loi","Tran Hung Dao","Pham Ngu Lao"],
-        extras: ["Ward","Phuong"], postal: [100000, 999999]
-    },
-    "United States": {
-        cities: ["Los Angeles","New York","Chicago","Houston","Phoenix"],
-        regions: ["CA","NY","IL","TX","AZ","FL"],
-        streets: ["Main St","Oak St","Pine Ave","Maple Dr","Cedar St"],
-        extras: ["Apt","Unit","Suite"], postal: [10000, 99999]
+// =======================================================
+// 2. ขยายฐานข้อมูลที่อยู่อังกฤษระดับสากล (สุ่มเป็นล้านก็ไม่ซ้ำ)
+// =======================================================
+const EN_STREET_PRE = [
+  "North","South","East","West","Old","New","Grand","Royal","Upper","Lower","Great","St.","Mount","Lake","River",
+  "Green","Golden","Silver","Sunny","Sunset","High","Oak","Pine","Maple","Cedar","Willow","Elm","Birch","Hill",
+  "Valley","Park","Ocean","Bay","Harbor","Meadow","Spring","Forest","Ridge","Crest","Highland","Pleasant","Brook",
+  "Stone","Mill","King","Queen","Victoria","Lincoln","Market","Commercial","Church","Castle","Falcon","Eagle","Orchard"
+];
+const EN_STREET_CORE = [
+  "Baker","Abbott","Cambridge","Oxford","Kensington","Richmond","Wellington","Broadway","Lexington","Madison","Sunset",
+  "Hollywood","Victoria","Church","Market","Station","College","University","School","Garden","Farm","Orchard","Horizon",
+  "Summit","Canyon","Creek","Grove","Haven","Terrace","Chase","Trail","Washington","Franklin","Jefferson","Adams","Jackson",
+  "Monroe","Harrison","Tyler","Taylor","Polk","Pierce","Grant","Arthur","Cleveland","Roosevelt","Wilson","Truman","Kennedy",
+  "Carter","Reagan","Bush","Clinton","Ford","Chester","Hampton","Sheffield","Windsor","Brighton","Bristol","Devonshire",
+  "Lancaster","Warwick","Gloucester","Sherwood","Somerset","Canterbury","York","Chesterfield","Fairview","Greenfield",
+  "Woodland","Parkland","Highland","Kingsford","Ashford","Langford","Brookfield","Waterfront","Bayshore","Riverside"
+];
+const EN_STREET_TYPES = [
+  "St","Street","Ave","Avenue","Blvd","Boulevard","Rd","Road","Dr","Drive","Ln","Lane","Way","Ct","Court","Pl","Place",
+  "Ter","Terrace","Pkwy","Parkway","Cir","Circle","Loop","Run","Row","Pass","Path","Walk","Xing","Trail","Alley","Square"
+];
+const EN_UNIT_TYPES = [
+  "Apt","Suite","Unit","Fl.","Floor","Bldg","Room","Rm","No.","Block","Lot","Bay","Dept","Space","Ste."
+];
+const EN_BLDG_PRE = [
+  "Sunrise","Sunset","Central","Grand","Royal","Metro","Pacific","Atlantic","Horizon","Skyline","Oasis","Garden","Park",
+  "Emerald","Diamond","Crystal","Sapphire","Pearl","Imperial","Sovereign","Prestige","Pinnacle","Apex","Vertex","Nova",
+  "Prime","Elite","Harmony","Serenity","Riverfront","Lakeside","Oceanview","Bayfront","Harbor","Hillside","Crestview",
+  "Summit","Valley","Highland","Downtown","Uptown","Midtown","Golden","Silver","Amber","Trinity","Regency","Crown","Marquis"
+];
+const EN_BLDG_SUF = [
+  "Tower","Towers","Plaza","Residences","Heights","Centre","Center","Court","Mansion","Mansions","Place","Point","Suites",
+  "Villa","Villas","Village","Gardens","Estate","Estates","Park","House","Square","Pavilion","Landmark","Terrace","Lofts",
+  "Condominiums","Manor","Lodge","Arcade","Palace","Atrium","Haven","Court"
+];
+const EN_LANDMARK_PREP = [
+  "Near","Opposite","Behind","Next to","Beside","In front of","Across from","Adjacent to","Facing","Overlooking","Corner of","Just past","Close to"
+];
+const EN_LANDMARK_FAC = [
+  "Central Mall","Shopping Center","Metro Station","Railway Terminal","City Hall","General Hospital","Grand Park",
+  "Tech Park","International Airport","Civic Center","Public Library","Sports Complex","National Museum","Convention Center",
+  "Botanical Garden","Ferry Terminal","University Campus","Harbor Pier","Financial Tower","City Square","Waterfront Market"
+];
+
+const EN_COUNTRY_DATA = {
+  "United States": {
+    cities: [
+      "New York","Los Angeles","Chicago","Houston","Phoenix","Philadelphia","San Antonio","San Diego","Dallas","San Jose",
+      "Austin","Jacksonville","Fort Worth","Columbus","Charlotte","Indianapolis","San Francisco","Seattle","Denver","Washington",
+      "Boston","El Paso","Nashville","Detroit","Oklahoma City","Portland","Las Vegas","Memphis","Louisville","Baltimore",
+      "Milwaukee","Albuquerque","Tucson","Fresno","Mesa","Sacramento","Atlanta","Kansas City","Colorado Springs","Miami",
+      "Raleigh","Omaha","Long Beach","Virginia Beach","Oakland","Minneapolis","Tampa","Tulsa","Arlington","New Orleans"
+    ],
+    regions: ["NY","CA","IL","TX","AZ","PA","OH","GA","NC","IN","WA","CO","DC","MA","TN","MI","OK","OR","NV","KY","MD","WI","NM","FL","VA","MN"],
+    zipMin: 10001, zipMax: 99950
+  },
+  "United Kingdom": {
+    cities: ["London","Manchester","Birmingham","Leeds","Glasgow","Liverpool","Edinburgh","Bristol","Sheffield","Newcastle","Belfast","Cardiff","Nottingham","Southampton","Leicester"],
+    regions: ["Greater London","Greater Manchester","West Midlands","West Yorkshire","Scotland","Merseyside","South West","South Yorkshire","Tyne and Wear","Wales"],
+    postalGen: () => {
+      const areas = ["SW","NW","EC","WC","SE","E","W","N","M","B","LS","G","L","EH","BS"];
+      return `${randomChoice(areas)}${randomInt(1,20)} ${randomInt(1,9)}${String.fromCharCode(65+randomInt(0,25))}${String.fromCharCode(65+randomInt(0,25))}`;
     }
+  },
+  "Canada": {
+    cities: ["Toronto","Montreal","Vancouver","Calgary","Edmonton","Ottawa","Winnipeg","Quebec City","Hamilton","Kitchener","Victoria","Halifax"],
+    regions: ["ON","QC","BC","AB","MB","NS","SK","NB"],
+    postalGen: () => `${String.fromCharCode(65+randomInt(0,25))}${randomInt(1,9)}${String.fromCharCode(65+randomInt(0,25))} ${randomInt(1,9)}${String.fromCharCode(65+randomInt(0,25))}${randomInt(1,9)}`
+  },
+  "Australia": {
+    cities: ["Sydney","Melbourne","Brisbane","Perth","Adelaide","Gold Coast","Canberra","Newcastle","Wollongong","Hobart","Geelong","Darwin"],
+    regions: ["NSW","VIC","QLD","WA","SA","TAS","ACT","NT"],
+    zipMin: 1000, zipMax: 9999
+  },
+  "Singapore": {
+    cities: ["Singapore","Jurong","Woodlands","Tampines","Bedok","Yishun","Ang Mo Kio","Hougang","Choa Chu Kang","Sengkang","Bukit Batok","Pasir Ris"],
+    regions: ["Central Region","East Region","North Region","North-East Region","West Region"],
+    zipMin: 100000, zipMax: 829999
+  },
+  "Malaysia": {
+    cities: ["Kuala Lumpur","George Town","Johor Bahru","Petaling Jaya","Shah Alam","Ipoh","Melaka","Kota Kinabalu","Kuching","Alor Setar","Kuantan","Seremban"],
+    regions: ["Selangor","Kuala Lumpur","Penang","Johor","Perak","Melaka","Sabah","Sarawak","Kedah","Pahang"],
+    zipMin: 10000, zipMax: 98000
+  },
+  "Philippines": {
+    cities: ["Quezon City","Manila","Davao City","Caloocan","Cebu City","Zamboanga City","Taguig","Pasig","Cagayan de Oro","Parañaque","Makati","Bacolod"],
+    regions: ["Metro Manila","Cebu","Davao del Sur","Laguna","Pangasinan","Cavite","Negros Occidental"],
+    zipMin: 1000, zipMax: 9811
+  },
+  "Indonesia": {
+    cities: ["Jakarta","Surabaya","Bandung","Medan","Bekasi","Palembang","Tangerang","Makassar","South Tangerang","Semarang","Depok","Batam","Denpasar"],
+    regions: ["DKI Jakarta","East Java","West Java","North Sumatra","Banten","South Sumatra","South Sulawesi","Central Java","Bali"],
+    zipMin: 10110, zipMax: 99999
+  },
+  "Vietnam": {
+    cities: ["Ho Chi Minh City","Hanoi","Da Nang","Hai Phong","Can Tho","Bien Hoa","Nha Trang","Hue","Buon Ma Thuot","Vung Tau","Quy Nhon"],
+    regions: ["District 1","District 3","District 7","Ba Dinh","Hoan Kiem","Dong Da","Hai Chau","Ngo Quyen"],
+    zipMin: 100000, zipMax: 999999
+  }
 };
 
+// =======================================================
+// 3. ฐานข้อมูลอำเภอทั่วประเทศ (DISTRICT_POOL 900+ รายการ)
+// =======================================================
 const DISTRICT_POOL = [
     "เขตพระนคร","เขตดุสิต","เขตหนองจอก","เขตบางรัก","เขตบางเขน","เขตบางกะปิ","เขตปทุมวัน","เขตป้อมปราบศัตรูพ่าย","เขตพระโขนง","เขตมีนบุรี","เขตลาดกระบัง","เขตยานนาวา","เขตสัมพันธวงศ์","เขตพญาไท","เขตธนบุรี","เขตบางกอกใหญ่","เขตห้วยขวาง","เขตคลองสาน","เขตตลิ่งชัน","เขตบางกอกน้อย","เขตบางขุนเทียน","เขตภาษีเจริญ","เขตหนองแขม","เขตราษฎร์บูรณะ","เขตบางพลัด","เขตดินแดง","เขตบึงกุ่ม","เขตสาทร","เขตบางซื่อ","เขตจตุจักร","เขตบางคอแหลม","เขตประเวศ","เขตคลองเตย","เขตสวนหลวง","เขตจอมทอง","เขตดอนเมือง","เขตราชเทวี","เขตลาดพร้าว","เขตวัฒนา","เขตบางแค","เขตหลักสี่","เขตสายไหม","เขตคันนายาว","เขตสะพานสูง","เขตวังทองหลาง","เขตคลองสามวา","เขตบางนา","เขตทวีวัฒนา","เขตทุ่งครุ","เขตบางบอน",
     "อ.เมืองสมุทรปราการ","อ.บางบ่อ","อ.บางพลี","อ.พระประแดง","อ.พระสมุทรเจดีย์","อ.บางเสาธง","อ.เมืองนนทบุรี","อ.บางกรวย","อ.บางใหญ่","อ.บางบัวทอง","อ.ไทรน้อย","อ.ปากเกร็ด","อ.เมืองปทุมธานี","อ.คลองหลวง","อ.ธัญบุรี","อ.หนองเสือ","อ.ลาดหลุมแก้ว","อ.ลำลูกกา","อ.สามโคก","อ.เมืองพระนครศรีอยุธยา","อ.ท่าเรือ","อ.นครหลวง","อ.บางไทร","อ.บางบาล","อ.บางปะอิน","อ.วังน้อย","อ.เสนา","อ.บางซ้าย","อ.อุทัย","อ.มหาราช","อ.บ้านแพรก","อ.เมืองอ่างทอง","อ.ไชโย","อ.ป่าโมก","อ.โพธิ์ทอง","อ.แสวงหา","อ.วิเศษชัยชาญ","อ.สามโก้","อ.เมืองลพบุรี","อ.พัฒนานิคม","อ.โคกสำโรง","อ.ชัยบาดาล","อ.ท่าวุ้ง","อ.บ้านหมี่","อ.ท่าหลวง","อ.สระโบสถ์","อ.โคกเจริญ","อ.ลำสนธิ","อ.หนองม่วง","อ.เมืองสิงห์บุรี","อ.บางระจัน","อ.ค่ายบางระจัน","อ.พรหมบุรี","อ.ท่าช้าง","อ.อินทร์บุรี","อ.เมืองชัยนาท","อ.มโนรมย์","อ.วัดสิงห์","อ.สรรพยา","อ.สรรคบุรี","อ.หันคา","อ.หนองมะโมง","อ.เนินขาม","อ.เมืองสระบุรี","อ.แก่งคอย","อ.หนองแค","อ.วิหารแดง","อ.หนองแซง","อ.บ้านหมอ","อ.ดอนพุด","อ.หนองโดน","อ.พระพุทธบาท","อ.เสาไห้","อ.มวกเหล็ก","อ.วังม่วง","อ.เฉลิมพระเกียรติ",
@@ -307,9 +399,8 @@ DISTRICT_POOL.forEach(dist => {
 });
 
 // =======================================================
-// 2. Core Logic ฟังก์ชันการทำงานต่างๆ
+// 4. Core Logic สุ่มข้อมูล & สุ่มที่อยู่อังกฤษ
 // =======================================================
-
 function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 function randomChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
@@ -332,44 +423,75 @@ function applyInjections(text, doAz, doDecor, doCn) {
   return tokens.join(' ').replace(/\s+/g, ' ').trim();
 }
 
-function generateEnglishAddress(country, useHouse, baseWords) {
-  const countries = Object.keys(EN_ADDRESS_POOLS);
-  if (!country || country === "Random") {
-      country = randomChoice(countries);
+function generateEnglishAddress(countryKey, useHouse, baseWords) {
+  const countryList = Object.keys(EN_COUNTRY_DATA);
+  let cName = countryKey;
+  if (!cName || cName === "Random" || !EN_COUNTRY_DATA[cName]) {
+    cName = randomChoice(countryList);
   }
-  const pool = EN_ADDRESS_POOLS[country];
-  const city = randomChoice(pool.cities);
-  const region = randomChoice(pool.regions);
-  const street = randomChoice(pool.streets);
-  const houseNo = randomInt(1, 9999).toString();
+  const cData = EN_COUNTRY_DATA[cName];
 
-  let extra = "";
+  // สุ่มชื่อถนนแบบผสมผสานหลายชั้น (พันธุกรรมคำศัพท์ 100,000+ แบบ)
+  let streetName = "";
+  const roll = Math.random();
+  if (roll < 0.4) {
+    streetName = `${randomChoice(EN_STREET_PRE)} ${randomChoice(EN_STREET_CORE)} ${randomChoice(EN_STREET_TYPES)}`;
+  } else if (roll < 0.75) {
+    streetName = `${randomChoice(EN_STREET_CORE)} ${randomChoice(EN_STREET_TYPES)}`;
+  } else {
+    streetName = `${randomChoice(EN_STREET_PRE)} ${randomChoice(EN_STREET_TYPES)}`;
+  }
+
+  // สุ่มเลขที่บ้าน / Unit / Suite / Room
+  let line1 = "";
+  const houseNum = randomInt(1, 9999);
+  let unitExtra = "";
+  if (Math.random() < 0.6) {
+    const uType = randomChoice(EN_UNIT_TYPES);
+    const uVal = Math.random() < 0.5 ? randomInt(1, 999) : `${String.fromCharCode(65 + randomInt(0, 25))}-${randomInt(101, 808)}`;
+    unitExtra = `, ${uType} ${uVal}`;
+  }
+
+  line1 = useHouse ? `${houseNum} ${streetName}${unitExtra}` : `${streetName}${unitExtra}`;
+
+  // สุ่มชื่อตึก / พลาซ่า / คอนโด
+  let bldgPart = "";
+  if (Math.random() < 0.55) {
+    bldgPart = `${randomChoice(EN_BLDG_PRE)} ${randomChoice(EN_BLDG_SUF)}`;
+  }
+
+  // สุ่ม Landmark สถานที่สังเกตใกล้เคียง
+  let landmarkPart = "";
   if (Math.random() < 0.45) {
-      extra = ", " + randomChoice(pool.extras) + " " + randomInt(1, 99);
+    landmarkPart = `${randomChoice(EN_LANDMARK_PREP)} ${randomChoice(EN_LANDMARK_FAC)}`;
   }
-  const postal = randomInt(pool.postal[0], pool.postal[1]).toString();
 
-  let line1 = useHouse ? `${houseNo} ${street}${extra}` : `${street}${extra}`;
+  const city = randomChoice(cData.cities);
+  const region = randomChoice(cData.regions);
 
-  const bldgWords = ["Tower","Plaza","Residences","Heights","Centre","Court"];
-  const bldgPrefix = randomChoice(["Sunrise","Central","River","Green","Sky","Grand","Royal","Metro"]);
-
-  let parts = [line1, city, `${region} ${postal}`];
-
-  if (Math.random() < 0.5) {
-      parts.splice(1, 0, `${bldgPrefix} ${randomChoice(bldgWords)}`);
+  // รหัสไปรษณีย์ตามมาตรฐานแต่ละประเทศ
+  let zip = "";
+  if (cData.postalGen) {
+    zip = cData.postalGen();
+  } else if (cData.zipMin && cData.zipMax) {
+    zip = randomInt(cData.zipMin, cData.zipMax).toString();
+  } else {
+    zip = randomInt(10000, 99999).toString();
   }
-  if (Math.random() < 0.4) {
-      const lm = randomChoice(["Near","Opp.","Behind","Next to"]);
-      const obj = randomChoice(["Mall","Station","Market","Park","School","Hospital"]);
-      parts.push(`${lm} ${randomChoice(['Central','Main','City','Grand'])} ${obj}`);
-  }
+
+  let parts = [line1];
+  if (bldgPart) parts.push(bldgPart);
+  if (landmarkPart) parts.push(landmarkPart);
+  parts.push(city);
+  parts.push(`${region} ${zip}`);
 
   let address = parts.filter(p => p).join(", ").trim();
 
+  // แทรกคำฐานแบบธรรมชาติ
   if (baseWords && baseWords.length > 0) {
-      address = weaveWordsIntoAddress(address, baseWords);
+    address = weaveWordsIntoAddress(address, baseWords);
   }
+
   return address;
 }
 
@@ -379,22 +501,22 @@ function weaveWordsIntoAddress(address, words) {
   if (tokens.length < 2) return address;
 
   let transformed = words.map(w => {
-      if (Math.random() < 0.3) return w.replace('มิ้น', 'มินต์').replace('กันจุ', 'กันจุุ');
-      return w;
+    if (Math.random() < 0.3) return w.replace('มิ้น', 'มินต์').replace('กันจุ', 'กันจุุ');
+    return w;
   });
 
   let out = [];
   let wi = 0;
   for (let i = 0; i < tokens.length; i++) {
-      out.push(tokens[i]);
-      if (wi < transformed.length && i > 0 && (i % Math.max(1, Math.floor(tokens.length / (transformed.length + 1)))) === 0) {
-          out.push(transformed[wi]);
-          wi++;
-      }
+    out.push(tokens[i]);
+    if (wi < transformed.length && i > 0 && (i % Math.max(1, Math.floor(tokens.length / (transformed.length + 1)))) === 0) {
+      out.push(transformed[wi]);
+      wi++;
+    }
   }
   while (wi < transformed.length) {
-      out.splice(randomInt(1, Math.max(1, out.length - 1)), 0, transformed[wi]);
-      wi++;
+    out.splice(randomInt(1, Math.max(1, out.length - 1)), 0, transformed[wi]);
+    wi++;
   }
   return out.join(" ").replace(/ ,/g, ",").trim();
 }
@@ -417,7 +539,9 @@ function clipCopy(text) {
   }
 }
 
-// --- ระบบบันทึกและโหลดค่า (LocalStorage) ---
+// =======================================================
+// 5. จัดการ LocalStorage บันทึกค่า
+// =======================================================
 function saveSettings() {
   const settings = {
     freqText1: document.getElementById('freqText1').value,
@@ -434,12 +558,12 @@ function saveSettings() {
     chkDecor: document.getElementById('chkDecor').checked,
     chkCn: document.getElementById('chkCn').checked,
   };
-  localStorage.setItem('tao_web_settings', JSON.stringify(settings));
+  localStorage.setItem('tao_web_settings_v3', JSON.stringify(settings));
 }
 
 function loadSettings() {
   try {
-    const raw = localStorage.getItem('tao_web_settings');
+    const raw = localStorage.getItem('tao_web_settings_v3');
     if (raw) {
       const s = JSON.parse(raw);
       if (s.freqText1 !== undefined) document.getElementById('freqText1').value = s.freqText1;
@@ -462,7 +586,9 @@ function loadSettings() {
   } catch(e) {}
 }
 
-// --- ฝั่งซ้าย: แสดงลิสต์อำเภอทั้งหมด (ตัด อ. ออกตอนคัดลอก) ---
+// =======================================================
+// 6. ควบคุมรายชื่ออำเภอ/เขต (ตัด อ. ออกตอนคัดลอก)
+// =======================================================
 function onRegionChange() {
   const region = document.getElementById('distRegion').value;
   const provRow = document.getElementById('distProvinceRow');
@@ -516,20 +642,19 @@ function listAllDistricts() {
   if(results.length === 0) return alert("ไม่พบข้อมูลอำเภอ");
 
   _lastDistrictList = results;
-
   document.getElementById('distCountBadge').textContent = results.length + ' รายการ';
 
   const box = document.getElementById('distResultBox');
   box.innerHTML = '';
 
   results.forEach((displayText, idx) => {
-    // ตัด อ. ออกตอนคัดลอก เช่น "อ.บางระจัน" -> "บางระจัน"
+    // ตัด อ. ออกทันทีเมื่อคัดลอก เช่น "อ.บางระจัน" -> "บางระจัน"
     const cleanCopyText = displayText.replace(/^อ\.\s*/, '');
     let row = document.createElement('div');
     row.className = 'result-item-row';
     row.innerHTML = `
       <span class="result-item-text"><span style="color:var(--text-dim);">#${idx+1}</span> &nbsp; ${displayText}</span>
-      <button class="row-copy-btn" onclick="clipCopy('${cleanCopyText}')">📋</button>
+      <button class="row-copy-btn" onclick="clipCopy('${cleanCopyText}')">📋 ก๊อปปี้</button>
     `;
     box.appendChild(row);
   });
@@ -537,12 +662,13 @@ function listAllDistricts() {
 
 function copyAllDistricts() {
   if (_lastDistrictList.length === 0) return alert("ยังไม่ได้แสดงข้อมูลอำเภอครับ");
-  // ตัด อ. ออกทุกรายการตอนกดคัดลอกทั้งหมด
   const cleaned = _lastDistrictList.map(d => d.replace(/^อ\.\s*/, ''));
   clipCopy(cleaned.join('\n'));
 }
 
-// --- ฝั่งขวา: สุ่มชุดข้อมูลหลัก (Farm Core Generator) ---
+// =======================================================
+// 7. สุ่มชุดข้อมูล Farm Core (ทำงานออโต้ตลอดเวลา)
+// =======================================================
 let _lastFarmData = [];
 
 function generateFarmData() {
@@ -564,21 +690,24 @@ function generateFarmData() {
     let finalAddr = "";
 
     if (addrType === "th") {
-        let addrBase = baseText ? baseText : randomChoice(DEFAULT_BASES);
-        if(Math.random() < 0.3) addrBase = addrBase.replace('มิ้น', 'มินต์').replace('กันจุ', 'กันจุุ');
-        if(useHouse) addrBase = randomInt(1, 999) + '/' + randomInt(1, 99) + ' ' + addrBase;
-
-        finalAddr = applyInjections(addrBase, doAz, doDecor, doCn);
+      let addrBase = baseText ? baseText : randomChoice(DEFAULT_BASES);
+      if(Math.random() < 0.3) addrBase = addrBase.replace('มิ้น', 'มินต์').replace('กันจุ', 'กันจุุ');
+      if(useHouse) addrBase = randomInt(1, 999) + '/' + randomInt(1, 99) + ' ' + addrBase;
+      finalAddr = applyInjections(addrBase, doAz, doDecor, doCn);
     } else {
-        let country = "Random";
-        if (addrType === "en_id") country = "Indonesia";
-        if (addrType === "en_ph") country = "Philippines";
-        if (addrType === "en_my") country = "Malaysia";
-        if (addrType === "en_vn") country = "Vietnam";
-        if (addrType === "en_us") country = "United States";
+      let country = "Random";
+      if (addrType === "en_us") country = "United States";
+      else if (addrType === "en_uk") country = "United Kingdom";
+      else if (addrType === "en_ca") country = "Canada";
+      else if (addrType === "en_au") country = "Australia";
+      else if (addrType === "en_sg") country = "Singapore";
+      else if (addrType === "en_my") country = "Malaysia";
+      else if (addrType === "en_ph") country = "Philippines";
+      else if (addrType === "en_id") country = "Indonesia";
+      else if (addrType === "en_vn") country = "Vietnam";
 
-        let addrBase = generateEnglishAddress(country, useHouse, baseWords);
-        finalAddr = applyInjections(addrBase, doAz, doDecor, doCn);
+      let addrBase = generateEnglishAddress(country, useHouse, baseWords);
+      finalAddr = applyInjections(addrBase, doAz, doDecor, doCn);
     }
 
     let fullLine = phone + " | " + finalAddr;
@@ -595,13 +724,13 @@ function generateFarmData() {
     let row = document.createElement('div');
     row.className = 'result-item-row';
     row.innerHTML = `
-      <span class="result-item-text" style="line-height:1.4;">
-        <span style="color:#00ff88">${item.phone}</span><br>${item.addr}
+      <span class="result-item-text">
+        <span style="color:#00ff88; font-weight:bold;">${item.phone}</span><br>${item.addr}
       </span>
-      <div style="display:flex; flex-direction:column; gap:4px;">
-        <button class="row-copy-btn" onclick="clipCopy('${item.phone}')" style="background:rgba(0,255,136,0.1); border-color:#00ff88; color:#00ff88;">📱 เบอร์</button>
-        <button class="row-copy-btn" onclick="clipCopy('${item.addr}')" style="background:rgba(255,200,0,0.1); border-color:#ffcc00; color:#ffcc00;">🏠 ที่อยู่</button>
-        <button class="row-copy-btn" onclick="clipCopy('${item.full}')">📋 ทั้งคู่</button>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button class="row-copy-btn btn-copy-phone" onclick="clipCopy('${item.phone}')">📱 เบอร์</button>
+        <button class="row-copy-btn btn-copy-addr" onclick="clipCopy('${item.addr}')">🏠 ที่อยู่</button>
+        <button class="row-copy-btn btn-copy-all" onclick="clipCopy('${item.full}')">📋 ทั้งคู่</button>
       </div>
     `;
     box.appendChild(row);
@@ -610,26 +739,28 @@ function generateFarmData() {
   const qrBox = document.getElementById('farmQrSection');
   if(!qrBox.classList.contains('hidden')) {
     qrBox.innerHTML = '';
-    QRCode.toCanvas('📋\n' + notepadText, { width: 220, margin: 2 }, function(err, canvas) {
+    QRCode.toCanvas('📋\n' + notepadText, { width: 230, margin: 2 }, function(err, canvas) {
       if(!err) qrBox.appendChild(canvas);
     });
   }
 }
 
-function copyNotepad() { clipCopy(document.getElementById('farmNotepad').value); }
+function copyNotepad() { 
+  clipCopy(document.getElementById('farmNotepad').value); 
+}
 
 function toggleFarmQR() {
   const qrBox = document.getElementById('farmQrSection');
   qrBox.classList.toggle('hidden');
   if(!qrBox.classList.contains('hidden') && _lastFarmData.length > 0) {
     qrBox.innerHTML = '';
-    QRCode.toCanvas('📋\n' + document.getElementById('farmNotepad').value, { width: 220, margin: 2 }, function(err, canvas) {
+    QRCode.toCanvas('📋\n' + document.getElementById('farmNotepad').value, { width: 230, margin: 2 }, function(err, canvas) {
       if(!err) qrBox.appendChild(canvas);
     });
   }
 }
 
-// --- ระบบ Auto Random (ทำงานอัตโนมัติ 1 นาทีต่อเนื่อง) ---
+// ระบบ Auto Timer 1 นาทีต่อเนื่อง
 let autoInterval = null;
 let countdownInterval = null;
 let secondsLeft = 60;
@@ -639,16 +770,14 @@ function startAutoRandom() {
   if (countdownInterval) clearInterval(countdownInterval);
 
   secondsLeft = 60;
-  generateFarmData(); // สุ่มรอบแรกทันทีเมื่อเปิดหน้าเว็บ
+  generateFarmData();
   updateTimerUI();
 
-  // วนรอบสุ่มทุก 60 วินาที
   autoInterval = setInterval(() => {
     secondsLeft = 60;
     generateFarmData();
   }, 60000);
 
-  // ตัวนับถอยหลังแสดงผลบนหน้าจอ
   countdownInterval = setInterval(() => {
     secondsLeft--;
     if (secondsLeft < 0) secondsLeft = 0;
@@ -662,12 +791,12 @@ function updateTimerUI() {
   document.getElementById('autoCountdown').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
 }
 
-// เริ่มต้นเปิดเว็บ
+// เริ่มต้นทำงานทันทีเมื่อเปิดเว็บ
 window.onload = function() {
   loadSettings();
   onRegionChange();
   listAllDistricts();
-  startAutoRandom(); // เริ่มระบบสุ่มอัตโนมัติทันที
+  startAutoRandom();
 };
 </script>
 
