@@ -36,12 +36,8 @@
 
   .btn-primary { width: 100%; padding: 15px 20px; border: 1px solid var(--accent); border-radius: 10px; background: linear-gradient(135deg,rgba(0,212,255,0.2),rgba(0,102,255,0.12)); color: var(--accent); font-family: var(--font_main); font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(0,212,255,0.15); text-align: center; }
   .btn-primary:hover { filter: brightness(1.25); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,212,255,0.25); }
-  
-  .btn-sub { width: 100%; padding: 14px 18px; border: 1px solid var(--border); border-radius: 10px; background: rgba(0,0,0,0.45); color: var(--text); font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center; }
-  .btn-sub:hover { border-color: var(--accent); color: var(--accent); }
 
-  /* ปุ่มคัดลอกไซส์ใหญ่พิเศษ ชัดเจน กดง่าย */
-  .cbtn-lg { flex: 1; min-width: 130px; padding: 14px 20px; border: 1.5px solid rgba(0,255,136,0.35); border-radius: 10px; background: rgba(0,255,136,0.12); color: #00ff88; font-weight: 800; font-size: 14px; cursor: pointer; transition: all 0.2s; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+  .cbtn-lg { min-width: 110px; padding: 12px 18px; border: 1.5px solid rgba(0,255,136,0.35); border-radius: 10px; background: rgba(0,255,136,0.12); color: #00ff88; font-weight: 800; font-size: 13px; cursor: pointer; transition: all 0.2s; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
   .cbtn-lg:hover { background: rgba(0,255,136,0.24); filter: brightness(1.2); transform: translateY(-1px); }
 
   .row-copy-btn { padding: 9px 16px; background: rgba(0,212,255,0.15); border: 1px solid var(--accent); color: var(--accent); border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; transition: all 0.2s; min-width: 55px; text-align: center; }
@@ -137,7 +133,7 @@
         <button class="btn-primary" onclick="toggleFarmQR()" style="flex:1; background:rgba(0,180,255,0.18); border-color:#00b4ff; color:#80d8ff;">📱 เปิด/ปิด QR</button>
       </div>
 
-      <!-- โหมด Auto (ทำงานอัตโนมัติตลอดเวลา) -->
+      <!-- โหมด Auto -->
       <div style="margin-top:14px; padding:12px 16px; border-radius:12px; background:rgba(255,200,0,0.06); border:1px solid rgba(255,200,0,0.25); display:flex; justify-content:space-between; align-items:center;">
         <div style="font-size:12.5px; color:#FFD600; font-weight:700; display:flex; align-items:center; gap:6px;">
           🔄 ระบบสุ่มอัตโนมัติทำงานทุก 1 นาที (ไม่ซ้ำล้านรูปแบบ)
@@ -150,7 +146,6 @@
     <div class="panel">
       <div class="result-header">
         <span class="result-title">📋 ผลลัพธ์ข้อมูลชุดล่าสุด</span>
-        <button class="cbtn-lg" onclick="copyNotepad()">📋 คัดลอกแบบรวมทั้งหมด (ส่งง่าย)</button>
       </div>
 
       <textarea id="farmNotepad" class="input-field hidden" rows="5"></textarea>
@@ -216,18 +211,13 @@
 
       <div class="input-row hidden" id="distProvinceRow">
         <label class="input-label">📍 จังหวัด</label>
-        <select id="distProvince" class="input-field" onchange="saveSettings()">
+        <select id="distProvince" class="input-field" onchange="listAllDistricts(); saveSettings();">
           <option value="">ทั้งภาค</option>
         </select>
       </div>
     </div>
 
-    <div class="grid-two" style="margin-top:8px;">
-      <button class="btn-primary" onclick="listAllDistricts()">📋 แสดงรายชื่ออำเภอ</button>
-      <button class="cbtn-lg" onclick="copyAllDistricts()">📝 คัดลอกอำเภอทั้งหมด</button>
-    </div>
-
-    <div class="result-rows-box" id="distResultBox" style="margin-top:14px; max-height:260px;"></div>
+    <div class="result-rows-box" id="distResultBox" style="margin-top:14px; max-height:280px;"></div>
   </div>
 
 </div>
@@ -244,7 +234,7 @@ const PHONE_PREFIX = ["061","062","063","064","065","066","067","068","069","081
 const DEFAULT_BASES = ["หมู่ 7 ตำบลกันจุ เสริมสวย มิ้น", "ซับไม้แดง ติดถนนใหญ่", "หมู่ 3 ท่าโรง บ้านสองชั้น"];
 
 // =======================================================
-// 2. ขยายฐานข้อมูลที่อยู่อังกฤษระดับสากล (สุ่มเป็นล้านก็ไม่ซ้ำ)
+// 2. ขยายฐานข้อมูลที่อยู่อังกฤษระดับสากล
 // =======================================================
 const EN_STREET_PRE = [
   "North","South","East","West","Old","New","Grand","Royal","Upper","Lower","Great","St.","Mount","Lake","River",
@@ -346,7 +336,7 @@ const EN_COUNTRY_DATA = {
 };
 
 // =======================================================
-// 3. ฐานข้อมูลอำเภอทั่วประเทศ (DISTRICT_POOL 900+ รายการ)
+// 3. ฐานข้อมูลอำเภอทั่วประเทศ
 // =======================================================
 const DISTRICT_POOL = [
     "เขตพระนคร","เขตดุสิต","เขตหนองจอก","เขตบางรัก","เขตบางเขน","เขตบางกะปิ","เขตปทุมวัน","เขตป้อมปราบศัตรูพ่าย","เขตพระโขนง","เขตมีนบุรี","เขตลาดกระบัง","เขตยานนาวา","เขตสัมพันธวงศ์","เขตพญาไท","เขตธนบุรี","เขตบางกอกใหญ่","เขตห้วยขวาง","เขตคลองสาน","เขตตลิ่งชัน","เขตบางกอกน้อย","เขตบางขุนเทียน","เขตภาษีเจริญ","เขตหนองแขม","เขตราษฎร์บูรณะ","เขตบางพลัด","เขตดินแดง","เขตบึงกุ่ม","เขตสาทร","เขตบางซื่อ","เขตจตุจักร","เขตบางคอแหลม","เขตประเวศ","เขตคลองเตย","เขตสวนหลวง","เขตจอมทอง","เขตดอนเมือง","เขตราชเทวี","เขตลาดพร้าว","เขตวัฒนา","เขตบางแค","เขตหลักสี่","เขตสายไหม","เขตคันนายาว","เขตสะพานสูง","เขตวังทองหลาง","เขตคลองสามวา","เขตบางนา","เขตทวีวัฒนา","เขตทุ่งครุ","เขตบางบอน",
@@ -431,7 +421,6 @@ function generateEnglishAddress(countryKey, useHouse, baseWords) {
   }
   const cData = EN_COUNTRY_DATA[cName];
 
-  // สุ่มชื่อถนนแบบผสมผสานหลายชั้น (พันธุกรรมคำศัพท์ 100,000+ แบบ)
   let streetName = "";
   const roll = Math.random();
   if (roll < 0.4) {
@@ -442,7 +431,6 @@ function generateEnglishAddress(countryKey, useHouse, baseWords) {
     streetName = `${randomChoice(EN_STREET_PRE)} ${randomChoice(EN_STREET_TYPES)}`;
   }
 
-  // สุ่มเลขที่บ้าน / Unit / Suite / Room
   let line1 = "";
   const houseNum = randomInt(1, 9999);
   let unitExtra = "";
@@ -454,13 +442,11 @@ function generateEnglishAddress(countryKey, useHouse, baseWords) {
 
   line1 = useHouse ? `${houseNum} ${streetName}${unitExtra}` : `${streetName}${unitExtra}`;
 
-  // สุ่มชื่อตึก / พลาซ่า / คอนโด
   let bldgPart = "";
   if (Math.random() < 0.55) {
     bldgPart = `${randomChoice(EN_BLDG_PRE)} ${randomChoice(EN_BLDG_SUF)}`;
   }
 
-  // สุ่ม Landmark สถานที่สังเกตใกล้เคียง
   let landmarkPart = "";
   if (Math.random() < 0.45) {
     landmarkPart = `${randomChoice(EN_LANDMARK_PREP)} ${randomChoice(EN_LANDMARK_FAC)}`;
@@ -469,7 +455,6 @@ function generateEnglishAddress(countryKey, useHouse, baseWords) {
   const city = randomChoice(cData.cities);
   const region = randomChoice(cData.regions);
 
-  // รหัสไปรษณีย์ตามมาตรฐานแต่ละประเทศ
   let zip = "";
   if (cData.postalGen) {
     zip = cData.postalGen();
@@ -487,7 +472,6 @@ function generateEnglishAddress(countryKey, useHouse, baseWords) {
 
   let address = parts.filter(p => p).join(", ").trim();
 
-  // แทรกคำฐานแบบธรรมชาติ
   if (baseWords && baseWords.length > 0) {
     address = weaveWordsIntoAddress(address, baseWords);
   }
@@ -539,9 +523,7 @@ function clipCopy(text) {
   }
 }
 
-// =======================================================
-// 5. จัดการ LocalStorage บันทึกค่า
-// =======================================================
+// --- ระบบบันทึกและโหลดค่า (LocalStorage) ---
 function saveSettings() {
   const settings = {
     freqText1: document.getElementById('freqText1').value,
@@ -558,12 +540,12 @@ function saveSettings() {
     chkDecor: document.getElementById('chkDecor').checked,
     chkCn: document.getElementById('chkCn').checked,
   };
-  localStorage.setItem('tao_web_settings_v3', JSON.stringify(settings));
+  localStorage.setItem('tao_web_settings_v4', JSON.stringify(settings));
 }
 
 function loadSettings() {
   try {
-    const raw = localStorage.getItem('tao_web_settings_v3');
+    const raw = localStorage.getItem('tao_web_settings_v4');
     if (raw) {
       const s = JSON.parse(raw);
       if (s.freqText1 !== undefined) document.getElementById('freqText1').value = s.freqText1;
@@ -573,7 +555,9 @@ function loadSettings() {
         document.getElementById('distRegion').value = s.distRegion;
         onRegionChange();
       }
-      if (s.distProvince !== undefined) document.getElementById('distProvince').value = s.distProvince;
+      if (s.distProvince !== undefined) {
+        document.getElementById('distProvince').value = s.distProvince;
+      }
       if (s.farmCount !== undefined) document.getElementById('farmCount').value = s.farmCount;
       if (s.farmStrength !== undefined) document.getElementById('farmStrength').value = s.farmStrength;
       if (s.farmAddrType !== undefined) document.getElementById('farmAddrType').value = s.farmAddrType;
@@ -586,9 +570,7 @@ function loadSettings() {
   } catch(e) {}
 }
 
-// =======================================================
-// 6. ควบคุมรายชื่ออำเภอ/เขต (ตัด อ. ออกตอนคัดลอก)
-// =======================================================
+// --- แสดงลิสต์อำเภอทันทีเมื่อเปลี่ยนภาค ---
 function onRegionChange() {
   const region = document.getElementById('distRegion').value;
   const provRow = document.getElementById('distProvinceRow');
@@ -598,17 +580,19 @@ function onRegionChange() {
 
   if (region === 'all' || region === 'bangkok') {
     provRow.classList.add('hidden');
-    return;
+  } else {
+    provRow.classList.remove('hidden');
+    const provinces = Object.keys(THAI_DATA[region] || {});
+    provinces.forEach(p => {
+      let opt = document.createElement('option');
+      opt.value = p;
+      opt.textContent = p;
+      provSelect.appendChild(opt);
+    });
   }
 
-  provRow.classList.remove('hidden');
-  const provinces = Object.keys(THAI_DATA[region] || {});
-  provinces.forEach(p => {
-    let opt = document.createElement('option');
-    opt.value = p;
-    opt.textContent = p;
-    provSelect.appendChild(opt);
-  });
+  // อัปเดตแสดงรายชื่อทันที
+  listAllDistricts();
 }
 
 let _lastDistrictList = [];
@@ -639,36 +623,33 @@ function listAllDistricts() {
     });
   }
 
-  if(results.length === 0) return alert("ไม่พบข้อมูลอำเภอ");
-
   _lastDistrictList = results;
-  document.getElementById('distCountBadge').textContent = results.length + ' รายการ';
+
+  const countBadge = document.getElementById('distCountBadge');
+  if (countBadge) countBadge.textContent = results.length + ' รายการ';
 
   const box = document.getElementById('distResultBox');
+  if (!box) return;
   box.innerHTML = '';
 
+  if (results.length === 0) {
+    box.innerHTML = '<div style="text-align:center; color:var(--text-dim); padding:20px; font-size:13px;">ไม่พบข้อมูลอำเภอ</div>';
+    return;
+  }
+
   results.forEach((displayText, idx) => {
-    // ตัด อ. ออกทันทีเมื่อคัดลอก เช่น "อ.บางระจัน" -> "บางระจัน"
     const cleanCopyText = displayText.replace(/^อ\.\s*/, '');
     let row = document.createElement('div');
     row.className = 'result-item-row';
     row.innerHTML = `
       <span class="result-item-text"><span style="color:var(--text-dim);">#${idx+1}</span> &nbsp; ${displayText}</span>
-      <button class="row-copy-btn" onclick="clipCopy('${cleanCopyText}')">📋 ก๊อปปี้</button>
+      <button class="row-copy-btn" onclick="clipCopy('${cleanCopyText}')">📋</button>
     `;
     box.appendChild(row);
   });
 }
 
-function copyAllDistricts() {
-  if (_lastDistrictList.length === 0) return alert("ยังไม่ได้แสดงข้อมูลอำเภอครับ");
-  const cleaned = _lastDistrictList.map(d => d.replace(/^อ\.\s*/, ''));
-  clipCopy(cleaned.join('\n'));
-}
-
-// =======================================================
-// 7. สุ่มชุดข้อมูล Farm Core (ทำงานออโต้ตลอดเวลา)
-// =======================================================
+// --- สุ่มชุดข้อมูลหลัก (Farm Core Generator) ---
 let _lastFarmData = [];
 
 function generateFarmData() {
@@ -715,11 +696,16 @@ function generateFarmData() {
     notepadText += (i+1) + ". " + fullLine + "\n";
   }
 
-  document.getElementById('farmNotepad').value = notepadText;
-  document.getElementById('farmBadge').textContent = count + ' ชุด';
+  const notepadEl = document.getElementById('farmNotepad');
+  if (notepadEl) notepadEl.value = notepadText;
+  
+  const badgeEl = document.getElementById('farmBadge');
+  if (badgeEl) badgeEl.textContent = count + ' ชุด';
 
   const box = document.getElementById('farmResultBox');
+  if (!box) return;
   box.innerHTML = '';
+
   _lastFarmData.forEach((item, idx) => {
     let row = document.createElement('div');
     row.className = 'result-item-row';
@@ -737,7 +723,7 @@ function generateFarmData() {
   });
 
   const qrBox = document.getElementById('farmQrSection');
-  if(!qrBox.classList.contains('hidden')) {
+  if(qrBox && !qrBox.classList.contains('hidden')) {
     qrBox.innerHTML = '';
     QRCode.toCanvas('📋\n' + notepadText, { width: 230, margin: 2 }, function(err, canvas) {
       if(!err) qrBox.appendChild(canvas);
@@ -745,22 +731,21 @@ function generateFarmData() {
   }
 }
 
-function copyNotepad() { 
-  clipCopy(document.getElementById('farmNotepad').value); 
-}
-
 function toggleFarmQR() {
   const qrBox = document.getElementById('farmQrSection');
+  if (!qrBox) return;
   qrBox.classList.toggle('hidden');
   if(!qrBox.classList.contains('hidden') && _lastFarmData.length > 0) {
     qrBox.innerHTML = '';
-    QRCode.toCanvas('📋\n' + document.getElementById('farmNotepad').value, { width: 230, margin: 2 }, function(err, canvas) {
+    const notepadEl = document.getElementById('farmNotepad');
+    const text = notepadEl ? notepadEl.value : '';
+    QRCode.toCanvas('📋\n' + text, { width: 230, margin: 2 }, function(err, canvas) {
       if(!err) qrBox.appendChild(canvas);
     });
   }
 }
 
-// ระบบ Auto Timer 1 นาทีต่อเนื่อง
+// --- ระบบ Auto Timer 1 นาทีต่อเนื่อง ---
 let autoInterval = null;
 let countdownInterval = null;
 let secondsLeft = 60;
@@ -788,14 +773,14 @@ function startAutoRandom() {
 function updateTimerUI() {
   let m = Math.floor(secondsLeft / 60);
   let s = secondsLeft % 60;
-  document.getElementById('autoCountdown').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  const timerEl = document.getElementById('autoCountdown');
+  if (timerEl) timerEl.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
 }
 
 // เริ่มต้นทำงานทันทีเมื่อเปิดเว็บ
 window.onload = function() {
   loadSettings();
   onRegionChange();
-  listAllDistricts();
   startAutoRandom();
 };
 </script>
