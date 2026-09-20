@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TAO TOOLBOX - Web App Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@400;600;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --accent:#00D4FF; --accent-dim:rgba(0,212,255,0.15);
+    --bg:#030a18; --bg_card:rgba(5,15,35,0.9); --border:rgba(0,212,255,0.2);
+    --text:#b8d4f0; --text-dim:rgba(100,160,200,0.6);
+    --font_main:'Outfit',sans-serif; --font_mono:'JetBrains Mono',monospace;
+  }
+  body { background-color: var(--bg); color: var(--text); font-family: var(--font_main); min-height: 100vh; overflow-y: auto; }
+
+  .container { width: 100%; max-width: 900px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .header { text-align: center; margin-bottom: 5px; }
+  .logo-text { font-size: 26px; font-weight: 900; background: linear-gradient(135deg,var(--accent),#0066ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .tagline { font-size: 12px; color: var(--text-dim); font-family: var(--font_mono); }
+
+  .panel { background: var(--bg_card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; backdrop-filter: blur(20px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+  .panel-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
+
+  .input-row { margin-bottom: 12px; }
+  .input-label { display: block; font-size: 12px; font-weight: 700; color: rgba(200,220,240,0.8); margin-bottom: 6px; }
+  .input-field, select.input-field { width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: var(--text); font-family: var(--font_mono); font-size: 13px; outline: none; }
+  .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+
+  .grid-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .panel-split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  @media(max-width: 768px) { .panel-split { grid-template-columns: 1fr; } }
+
+  .btn-primary { width: 100%; padding: 14px; border: 1px solid var(--accent); border-radius: 8px; background: linear-gradient(135deg,var(--accent-dim),rgba(0,0,0,0.2)); color: var(--accent); font-family: var(--font_main); font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-primary:hover { filter: brightness(1.2); transform: translateY(-1px); }
+  .btn-sub { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.4); color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-sub:hover { border-color: var(--accent); color: var(--accent); }
+
+  .cbtn { flex: 1; min-width: 100px; padding: 10px; border: 1px solid rgba(0,255,136,0.3); border-radius: 8px; background: rgba(0,255,136,0.1); color: #00ff88; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .cbtn:hover { background: rgba(0,255,136,0.2); }
+
+  .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .result-title { font-size: 14px; font-weight: bold; color: var(--accent); }
+  .count-badge { font-size: 11px; background: var(--accent-dim); color: var(--accent); padding: 3px 8px; border-radius: 12px; }
+
+  .result-rows-box { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .result-item-row { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); gap: 10px; }
+  .result-item-text { font-family: var(--font_mono); font-size: 12px; word-break: break-all; color: #fff; flex: 1; }
+  .row-copy-btn { padding: 6px 12px; background: rgba(0,212,255,0.15); border: 1px solid var(--accent); color: var(--accent); border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+  .row-copy-btn:hover { background: var(--accent); color: #000; }
+
+  .notice { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #00ff88; color: #000; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 13px; z-index: 999; animation: fadein 0.3s; }
+  .hidden { display: none !important; }
+  @keyframes fadein { from { opacity: 0; top: 0; } to { opacity: 1; top: 20px; } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="logo-text">TAO TOOLBOX</div>
+    <div class="tagline">Serverless Web App · Farm Core Inside</div>
+  </div>
+
+  <div class="panel-split">
+
+    <!-- ─── คอลัมน์ซ้าย: ข้อความใช้ประจำ + รายชื่ออำเภอ/เขต ─── -->
+    <div>
+      <div class="panel">
+        <div class="panel-title" style="margin-bottom: 12px;">📌 ข้อความใช้ประจำ</div>
+        <div class="input-row">
+          <label class="input-label">ข้อความที่ 1 (ค่าเริ่มต้น)</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="freqText1" class="input-field" value="บ้านซับบอน ต.กันจุ" oninput="saveSettings()" />
+            <button class="row-copy-btn" onclick="clipCopy(document.getElementById('freqText1').value)">📋</button>
+          </div>
+        </div>
+        <div class="input-row">
+          <label class="input-label">ข้อความที่ 2</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="freqText2" class="input-field" placeholder="เพิ่มข้อความใช้บ่อย..." oninput="saveSettings()" />
+            <button class="row-copy-btn" onclick="clipCopy(document.getElementById('freqText2').value)">📋</button>
+          </div>
+        </div>
+        <div class="input-row">
+          <label class="input-label">ข้อความที่ 3</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="freqText3" class="input-field" placeholder="เพิ่มข้อความใช้บ่อย..." oninput="saveSettings()" />
+            <button class="row-copy-btn" onclick="clipCopy(document.getElementById('freqText3').value)">📋</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="result-header" style="border:none; padding:0; margin-bottom:12px;">
+          <span class="panel-title">🗺️ รายชื่ออำเภอ/เขต (ครบทุกจังหวัด)</span>
+          <span class="count-badge" id="distCountBadge">0 รายการ</span>
+        </div>
+
+        <div class="input-row">
+          <label class="input-label">พื้นที่</label>
+          <select id="distRegion" class="input-field" onchange="onRegionChange(); saveSettings();">
+            <option value="all">ทั่วประเทศ</option>
+            <option value="bangkok">กรุงเทพฯ</option>
+            <option value="central">ภาคกลาง</option>
+            <option value="north">ภาคเหนือ</option>
+            <option value="northeast">ภาคอีสาน</option>
+            <option value="east">ภาคตะวันออก</option>
+            <option value="west">ภาคตะวันตก</option>
+            <option value="south">ภาคใต้</option>
+          </select>
+        </div>
+
+        <div class="input-row hidden" id="distProvinceRow">
+          <label class="input-label">📍 จังหวัด</label>
+          <select id="distProvince" class="input-field" onchange="saveSettings()">
+            <option value="">ทั้งภาค</option>
+          </select>
+        </div>
+
+        <div class="grid-two" style="margin-top:14px;">
+          <button class="btn-primary" onclick="listAllDistricts()">📋 แสดงอำเภอทั้งหมด</button>
+          <button class="btn-sub" onclick="copyAllDistricts()" style="background:rgba(0,255,136,0.1); border-color:rgba(0,255,136,0.3); color:#00ff88;">📝 คัดลอกทั้งหมด</button>
+        </div>
+
+        <div class="result-rows-box" id="distResultBox" style="margin-top:15px; max-height:220px;"></div>
+      </div>
+    </div>
+
+    <!-- ─── คอลัมน์ขวา: สุ่มชุดข้อมูลหลัก (Farm Core) ─── -->
+    <div>
+      <div class="panel">
+        <div class="panel-title">🎲 สุ่มข้อมูลแบบครบชุด (จำลอง Farm Core)</div>
+
+        <div class="grid-two">
+          <div class="input-row">
+            <label class="input-label">🔢 จำนวนชุด</label>
+            <input type="number" id="farmCount" class="input-field" value="1" min="1" max="50" oninput="saveSettings()" />
+          </div>
+          <div class="input-row">
+            <label class="input-label">💪 ความแรง (เฉพาะภาษาไทย)</label>
+            <select id="farmStrength" class="input-field" onchange="saveSettings()">
+              <option value="น้อย">น้อย</option>
+              <option value="ปกติ" selected>ปกติ</option>
+              <option value="มาก">มาก</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <label class="input-label">🌍 ประเภทที่อยู่</label>
+          <select id="farmAddrType" class="input-field" onchange="saveSettings()">
+            <option value="th">🇹🇭 ไทย (ชุด 1)</option>
+            <option value="en_random" selected>🌍 อังกฤษ (สุ่มประเทศ)</option>
+            <option value="en_id">🇮🇩 อินโดนีเซีย (Indonesia)</option>
+            <option value="en_ph">🇵🇭 ฟิลิปปินส์ (Philippines)</option>
+            <option value="en_my">🇲🇾 มาเลเซีย (Malaysia)</option>
+            <option value="en_vn">🇻🇳 เวียดนาม (Vietnam)</option>
+            <option value="en_us">🇺🇸 สหรัฐอเมริกา (United States)</option>
+          </select>
+        </div>
+
+        <div class="input-row">
+          <label class="input-label">✏️ ข้อความฐาน (จะถูกนำไปแทรกในที่อยู่ด้วย)</label>
+          <input type="text" id="farmBase" class="input-field" value="เสริม สวย มิ้น" placeholder="เช่น หมู่ 7 ตำบลกันจุ เสริมสวย มิ้น" oninput="saveSettings()" />
+        </div>
+
+        <div class="grid-two" style="margin-bottom:8px;">
+          <label style="font-size:12px; display:flex; align-items:center; gap:6px;"><input type="checkbox" id="chkHouse" checked onchange="saveSettings()" /> 🏠 สุ่มบ้านเลขที่</label>
+          <label style="font-size:12px; display:flex; align-items:center; gap:6px;"><input type="checkbox" id="chkAz" checked onchange="saveSettings()" /> 🔤 แทรก A-Z</label>
+        </div>
+        <div class="grid-two" style="margin-bottom:12px;">
+          <label style="font-size:12px; display:flex; align-items:center; gap:6px;"><input type="checkbox" id="chkDecor" onchange="saveSettings()" /> ✦ แทรกตกแต่ง</label>
+          <label style="font-size:12px; display:flex; align-items:center; gap:6px;"><input type="checkbox" id="chkCn" onchange="saveSettings()" /> 🀄 แทรกตัวจีน</label>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button class="btn-primary" onclick="generateFarmData()" style="flex:2;">🎲 สุ่มทั้งหมด</button>
+          <button class="btn-primary" onclick="toggleFarmQR()" style="flex:1; background:rgba(0,180,255,0.15); border-color:#00b4ff; color:#80d8ff; font-size:13px;">📱 เปิด QR</button>
+        </div>
+
+        <!-- โหมด Auto -->
+        <div style="margin-top:14px; padding:12px; border-radius:10px; background:rgba(255,200,0,0.05); border:1px solid rgba(255,200,0,0.2); display:flex; justify-content:space-between; align-items:center;">
+          <label style="font-size:12px; color:#FFD600; display:flex; align-items:center; gap:6px;">
+            <input type="checkbox" id="chkAuto" onchange="toggleAuto(); saveSettings();" /> 🔄 สุ่มออโต้ทุก 1 นาที
+          </label>
+          <span id="autoCountdown" style="font-family:var(--font_mono); font-size:12px; color:var(--text-dim);">--:--</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="result-header">
+          <span class="result-title">📋 ผลลัพธ์ข้อมูล</span>
+          <span class="count-badge" id="farmBadge">0 ชุด</span>
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+          <button class="cbtn" onclick="copyNotepad()">📋 ก๊อปปี้แบบรวม (เพื่อส่ง)</button>
+        </div>
+
+        <textarea id="farmNotepad" class="input-field hidden" rows="5"></textarea>
+
+        <div id="farmQrSection" class="hidden" style="text-align:center; padding:10px; background:#fff; border-radius:10px; margin-bottom:10px;"></div>
+
+        <div id="farmResultBox" class="result-rows-box"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toastNotice" class="notice hidden">✅ คัดลอกแล้ว!</div>
+
+<script>
+// =======================================================
+// 1. ฐานข้อมูล
+// =======================================================
+
+const DECOR_TOKENS = ["·","•","⋆","✦","⟡","—","~","˗","¯","_"];
+const CN_CHARS = ["的","一","是","在","不","了","有","和","人","中","大","国","我","以","要","他"];
+const PHONE_PREFIX = ["061","062","063","064","065","081","082","083","084","085","086","087","088","089","091","092","093","094","095","098"];
+const DEFAULT_BASES = ["หมู่ 7 ตำบลกันจุ เสริมสวย มิ้น", "ซับไม้แดง ติดถนนใหญ่", "หมู่ 3 ท่าโรง บ้านสองชั้น"];
+
+const EN_ADDRESS_POOLS = {
+    "Indonesia": {
+        cities: ["Jakarta","Bandung","Surabaya","Medan","Denpasar","Yogyakarta"],
+        regions: ["DKI Jakarta","West Java","East Java","North Sumatra","Bali"],
+        streets: ["Sudirman","Thamrin","Gatot Subroto","Diponegoro","Ahmad Yani"],
+        extras: ["Kel.","Kec.","RT","RW"], postal: [10110, 99999]
+    },
+    "Philippines": {
+        cities: ["Quezon City","Makati","Taguig","Cebu City","Davao City"],
+        regions: ["Metro Manila","Cebu","Davao del Sur","Laguna"],
+        streets: ["Rizal Ave","Bonifacio St","Ayala Ave","Osmeña Blvd"],
+        extras: ["Barangay","Brgy."], postal: [4000, 9811]
+    },
+    "Malaysia": {
+        cities: ["Kuala Lumpur","Petaling Jaya","Shah Alam","George Town"],
+        regions: ["Selangor","Kuala Lumpur","Penang","Johor"],
+        streets: ["Jalan Tun Razak","Jalan Ampang","Jalan Sultan Ismail"],
+        extras: ["Taman","Persiaran","Lorong"], postal: [10000, 98000]
+    },
+    "Vietnam": {
+        cities: ["Ho Chi Minh City","Hanoi","Da Nang","Hai Phong"],
+        regions: ["District 1","District 3","District 7","Ba Dinh"],
+        streets: ["Nguyen Hue","Le Loi","Tran Hung Dao","Pham Ngu Lao"],
+        extras: ["Ward","Phuong"], postal: [100000, 999999]
+    },
+    "United States": {
+        cities: ["Los Angeles","New York","Chicago","Houston","Phoenix"],
+        regions: ["CA","NY","IL","TX","AZ","FL"],
+        streets: ["Main St","Oak St","Pine Ave","Maple Dr","Cedar St"],
+        extras: ["Apt","Unit","Suite"], postal: [10000, 99999]
+    }
+};
+
+const DISTRICT_POOL = [
+    "เขตพระนคร","เขตดุสิต","เขตหนองจอก","เขตบางรัก","เขตบางเขน","เขตบางกะปิ","เขตปทุมวัน","เขตป้อมปราบศัตรูพ่าย","เขตพระโขนง","เขตมีนบุรี","เขตลาดกระบัง","เขตยานนาวา","เขตสัมพันธวงศ์","เขตพญาไท","เขตธนบุรี","เขตบางกอกใหญ่","เขตห้วยขวาง","เขตคลองสาน","เขตตลิ่งชัน","เขตบางกอกน้อย","เขตบางขุนเทียน","เขตภาษีเจริญ","เขตหนองแขม","เขตราษฎร์บูรณะ","เขตบางพลัด","เขตดินแดง","เขตบึงกุ่ม","เขตสาทร","เขตบางซื่อ","เขตจตุจักร","เขตบางคอแหลม","เขตประเวศ","เขตคลองเตย","เขตสวนหลวง","เขตจอมทอง","เขตดอนเมือง","เขตราชเทวี","เขตลาดพร้าว","เขตวัฒนา","เขตบางแค","เขตหลักสี่","เขตสายไหม","เขตคันนายาว","เขตสะพานสูง","เขตวังทองหลาง","เขตคลองสามวา","เขตบางนา","เขตทวีวัฒนา","เขตทุ่งครุ","เขตบางบอน",
+    "อ.เมืองสมุทรปราการ","อ.บางบ่อ","อ.บางพลี","อ.พระประแดง","อ.พระสมุทรเจดีย์","อ.บางเสาธง","อ.เมืองนนทบุรี","อ.บางกรวย","อ.บางใหญ่","อ.บางบัวทอง","อ.ไทรน้อย","อ.ปากเกร็ด","อ.เมืองปทุมธานี","อ.คลองหลวง","อ.ธัญบุรี","อ.หนองเสือ","อ.ลาดหลุมแก้ว","อ.ลำลูกกา","อ.สามโคก","อ.เมืองพระนครศรีอยุธยา","อ.ท่าเรือ","อ.นครหลวง","อ.บางไทร","อ.บางบาล","อ.บางปะอิน","อ.วังน้อย","อ.เสนา","อ.บางซ้าย","อ.อุทัย","อ.มหาราช","อ.บ้านแพรก","อ.เมืองอ่างทอง","อ.ไชโย","อ.ป่าโมก","อ.โพธิ์ทอง","อ.แสวงหา","อ.วิเศษชัยชาญ","อ.สามโก้","อ.เมืองลพบุรี","อ.พัฒนานิคม","อ.โคกสำโรง","อ.ชัยบาดาล","อ.ท่าวุ้ง","อ.บ้านหมี่","อ.ท่าหลวง","อ.สระโบสถ์","อ.โคกเจริญ","อ.ลำสนธิ","อ.หนองม่วง","อ.เมืองสิงห์บุรี","อ.บางระจัน","อ.ค่ายบางระจัน","อ.พรหมบุรี","อ.ท่าช้าง","อ.อินทร์บุรี","อ.เมืองชัยนาท","อ.มโนรมย์","อ.วัดสิงห์","อ.สรรพยา","อ.สรรคบุรี","อ.หันคา","อ.หนองมะโมง","อ.เนินขาม","อ.เมืองสระบุรี","อ.แก่งคอย","อ.หนองแค","อ.วิหารแดง","อ.หนองแซง","อ.บ้านหมอ","อ.ดอนพุด","อ.หนองโดน","อ.พระพุทธบาท","อ.เสาไห้","อ.มวกเหล็ก","อ.วังม่วง","อ.เฉลิมพระเกียรติ",
+    "อ.เมืองชลบุรี","อ.บ้านบึง","อ.หนองใหญ่","อ.บางละมุง","อ.พานทอง","อ.พนัสนิคม","อ.ศรีราชา","อ.สัตหีบ","อ.บ่อทอง","อ.เมืองระยอง","อ.บ้านฉาง","อ.แกลง","อ.วังจันทร์","อ.บ้านค่าย","อ.ปลวกแดง","อ.เขาชะเมา","อ.นิคมพัฒนา","อ.เมืองจันทบุรี","อ.ขลุง","อ.ท่าใหม่","อ.โป่งน้ำร้อน","อ.มะขาม","อ.แหลมสิงห์","อ.สอยดาว","อ.แก่งหางแมว","อ.นายายอาม","อ.เขาคิชฌกูฏ","อ.เมืองตราด","อ.คลองใหญ่","อ.เขาสมิง","อ.บ่อไร่","อ.แหลมงอบ","อ.เมืองฉะเชิงเทรา","อ.บางคล้า","อ.บางน้ำเปรี้ยว","อ.บางปะกง","อ.บ้านโพธิ์","อ.พนมสารคาม","อ.ราชสาส์น","อ.สนามชัยเขต","อ.แปลงยาว","อ.ท่าตะเกียบ","อ.คลองเขื่อน","อ.เมืองปราจีนบุรี","อ.กบินทร์บุรี","อ.นาดี","อ.บ้านสร้าง","อ.ประจันตคาม","อ.ศรีมหาโพธิ","อ.ศรีมโหสถ","อ.เมืองนครนายก","อ.ปากพลี","อ.บ้านนา","อ.องครักษ์","อ.เมืองสระแก้ว","อ.คลองหาด","อ.ตาพระยา","อ.วังน้ำเย็น","อ.วัฒนานคร","อ.อรัญประเทศ","อ.เขาฉกรรจ์","อ.โคกสูง","อ.วังสมบูรณ์",
+    "อ.เมืองนครราชสีมา","อ.ครบุรี","อ.เสิงสาง","อ.คง","อ.บ้านเหลื่อม","อ.จักราช","อ.โชคชัย","อ.ด่านขุนทด","อ.โนนไทย","อ.โนนสูง","อ.ขามสะแกแสง","อ.บัวใหญ่","อ.ประทาย","อ.ปักธงชัย","อ.พิมาย","อ.ห้วยแถลง","อ.ชุมพวง","อ.สูงเนิน","อ.ขามทะเลสอ","อ.สีคิ้ว","อ.ปากช่อง","อ.หนองบุญมาก","อ.แก้งสนามนาง","อ.โนนแดง","อ.วังน้ำเขียว","อ.เทพารักษ์","อ.เมืองยาง","อ.พระทองคำ","อ.ลำทะเมนชัย","อ.บัวลาย","อ.สีดา","อ.เมืองบุรีรัมย์","อ.คูเมือง","อ.กระสัง","อ.นางรอง","อ.หนองกี่","อ.ละหานทราย","อ.ประโคนชัย","อ.บ้านกรวด","อ.พุทไธสง","อ.ลำปลายมาศ","อ.สตึก","อ.ปะคำ","อ.นาโพธิ์","อ.หนองหงส์","อ.พลับพลาชัย","อ.ห้วยราช","อ.โนนสุวรรณ","อ.ชำนิ","อ.บ้านใหม่ไชยพจน์","อ.โนนดินแดง","อ.บ้านด่าน","อ.แคนดง","อ.เมืองสุรินทร์","อ.ชุมพลบุรี","อ.ท่าตูม","อ.จอมพระ","อ.ปราสาท","อ.กาบเชิง","อ.รัตนบุรี","อ.สนม","อ.ศีขรภูมิ","อ.สังขะ","อ.ลำดวน","อ.สำโรงทาบ","อ.บัวเชด","อ.พนมดงรัก","อ.ศรีณรงค์","อ.เขวาสินรินทร์","อ.โนนนารายณ์","อ.เมืองศรีสะเกษ","อ.ยางชุมน้อย","อ.กันทรารมย์","อ.กันทรลักษ์","อ.ขุขันธ์","อ.ไพรบึง","อ.ปรางค์กู่","อ.ขุนหาญ","อ.ราษีไศล","อ.อุทุมพรพิสัย","อ.บึงบูรพ์","อ.ห้วยทับทัน","อ.โนนคูณ","อ.ศรีรัตนะ","อ.น้ำเกลี้ยง","อ.วังหิน","อ.ภูสิงห์","อ.เมืองจันทร์","อ.เบญจลักษ์","อ.พยุห์","อ.โพธิ์ศรีสุวรรณ","อ.ศิลาลาด","อ.เมืองอุบลราชธานี","อ.ศรีเมืองใหม่","อ.โขงเจียม","อ.เขื่องใน","อ.เขมราฐ","อ.เดชอุดม","อ.นาจะหลวย","อ.น้ำยืน","อ.บุณฑริก","อ.ตระการพืชผล","อ.กุดข้าวปุ้น","อ.ม่วงสามสิบ","อ.วารินชำราบ","อ.พิบูลมังสาหาร","อ.ตาลสุม","อ.โพธิ์ไทร","อ.สำโรง","อ.ดอนมดแดง","อ.สิรินธร","อ.ทุ่งศรีอุดม","อ.นาเยีย","อ.นาตาล","อ.เหล่าเสือโก้ก","อ.สว่างวีระวงศ์","อ.น้ำขุ่น","อ.เมืองยโสธร","อ.ทรายมูล","อ.กุดชุม","อ.คำเขื่อนแก้ว","อ.ป่าติ้ว","อ.มหาชนะชัย","อ.ค้อวัง","อ.เลิงนกทา","อ.ไทยเจริญ","อ.เมืองอำนาจเจริญ","อ.ชานุมาน","อ.ปทุมราชวงศา","อ.พนา","อ.เสนางคนิคม","อ.หัวตะพาน","อ.ลืออำนาจ","อ.เมืองบึงกาฬ","อ.พรเจริญ","อ.โซ่พิสัย","อ.เซกา","อ.ปากคาด","อ.บึงโขงหลง","อ.ศรีวิไล","อ.บุ่งคล้า","อ.เมืองหนองบัวลำภู","อ.นากลาง","อ.โนนสัง","อ.ศรีบุญเรือง","อ.สุวรรณคูหา","อ.นาวัง","อ.เมืองขอนแก่น","อ.บ้านฝาง","อ.พระยืน","อ.หนองเรือ","อ.ชุมแพ","อ.สีชมพู","อ.น้ำพอง","อ.อุบลรัตน์","อ.กระนวน","อ.บ้านไผ่","อ.เปือยน้อย","อ.พล","อ.แวงใหญ่","อ.แวงน้อย","อ.หนองสองห้อง","อ.ภูเวียง","อ.มัญจาคีรี","อ.ชนบท","อ.เขาสวนกวาง","อ.ภูผาม่าน","อ.ซำสูง","อ.โคกโพธิ์ไชย","อ.หนองนาคำ","อ.บ้านแฮด","อ.โนนศิลา","อ.เวียงเก่า","อ.เมืองอุดรธานี","อ.เพ็ญ","อ.สร้างคอม","อ.บ้านดุง","อ.หนองหาน","อ.ทุ่งฝน","อ.พิบูลย์รักษ์","อ.ศรีธาตุ","อ.วังสามหมอ","อ.กุมภวาปี","อ.โนนสะอาด","อ.หนองแสง","อ.น้ำโสม","อ.นายูง","อ.กุดจับ","อ.หนองวัวซอ","อ.ประจักษ์ศิลปาคม","อ.เมืองเลย","อ.นาด้วง","อ.เชียงคาน","อ.ปากชม","อ.ด่านซ้าย","อ.นาแห้ว","อ.ภูเรือ","อ.ท่าลี่","อ.วังสะพุง","อ.ภูกระดึง","อ.ภูหลวง","อ.ผาขาว","อ.เอราวัณ","อ.หนองหิน","อ.เมืองหนองคาย","อ.ท่าบ่อ","อ.โพนพิสัย","อ.ศรีเชียงใหม่","อ.สังคม","อ.สระใคร","อ.เฝ้าไร่","อ.รัตนวาปี","อ.เมืองมหาสารคาม","อ.แกดำ","อ.โกสุมพิสัย","อ.กันทรวิชัย","อ.เชียงยืน","อ.บรบือ","อ.นาเชือก","อ.พยัคฆภูมิพิสัย","อ.วาปีปทุม","อ.นาดูน","อ.ยางสีสุราช","อ.กุดรัง","อ.ชื่นชม","อ.เมืองร้อยเอ็ด","อ.เกษตรวิสัย","อ.ปทุมรัตต์","อ.จตุรพักตรพิมาน","อ.ธวัชบุรี","อ.พนมไพร","อ.โพนทอง","อ.โพธิ์ชัย","อ.หนองพอก","อ.เสลภูมิ","อ.สุวรรณภูมิ","อ.เมืองสรวง","อ.โพนทราย","อ.อาจสามารถ","อ.เมยวดี","อ.ศรีสมเด็จ","อ.จังหาร","อ.เชียงขวัญ","อ.หนองฮี","อ.ทุ่งเขาหลวง","อ.เมืองกาฬสินธุ์","อ.นามน","อ.กมลาไสย","อ.ร่องคำ","อ.สหัสขันธ์","อ.ดอนจาน","อ.สมเด็จ","อ.ยางตลาด","อ.ห้วยเม็ก","อ.คำม่วง","อ.ท่าคันโท","อ.หนองกุงศรี","อ.เขาวง","อ.ห้วยผึ้ง","อ.สามชัย","อ.นาคู","อ.ฆ้องชัย","อ.เมืองสกลนคร","อ.กุสุมาลย์","อ.กุดบาก","อ.พรรณานิคม","อ.พังโคน","อ.วาริชภูมิ","อ.นิคมน้ำอูน","อ.วานรนิวาส","อ.คำตากล้า","อ.บ้านม่วง","อ.อากาศอำนวย","อ.สว่างแดนดิน","อ.ส่องดาว","อ.เต่างอย","อ.โคกศรีสุพรรณ","อ.เจริญศิลป์","อ.โพนนาแก้ว","อ.ภูพาน","อ.เมืองนครพนม","อ.ปลาปาก","อ.ท่าอุเทน","อ.บ้านแพง","อ.ธาตุพนม","อ.เรณูนคร","อ.นาแก","อ.ศรีสงคราม","อ.นาหว้า","อ.โพนสวรรค์","อ.นาทม","อ.วังยาง","อ.เมืองมุกดาหาร","อ.นิคมคำสร้อย","อ.ดอนตาล","อ.ดงหลวง","อ.คำชะอี","อ.หว้านใหญ่","อ.หนองสูง",
+    "อ.เมืองเชียงใหม่","อ.จอมทอง","อ.แม่แจ่ม","อ.เชียงดาว","อ.ดอยสะเก็ด","อ.แม่แตง","อ.แม่ริม","อ.สะเมิง","อ.ฝาง","อ.แม่อาย","อ.พร้าว","อ.สันป่าตอง","อ.สันกำแพง","อ.สันทราย","อ.หางดง","อ.ฮอด","อ.ดอยเต่า","อ.อมก๋อย","อ.สารภี","อ.เวียงแหง","อ.ไชยปราการ","อ.แม่วาง","อ.แม่ออน","อ.ดอยหล่อ","อ.กัลยาณิวัฒนา","อ.เมืองลำพูน","อ.แม่ทา","อ.บ้านโฮ่ง","อ.ลี้","อ.ทุ่งหัวช้าง","อ.ป่าซาง","อ.บ้านธิ","อ.เวียงหนองล่อง","อ.เมืองลำปาง","อ.แม่เมาะ","อ.เสริมงาม","อ.งาว","อ.แจ้ห่ม","อ.วังเหนือ","อ.เถิน","อ.แม่พริก","อ.แม่ทะ","อ.สบปราบ","อ.ห้างฉัตร","อ.เมืองปาน","อ.เมืองอุตรดิตถ์","อ.ตรอน","อ.ท่าปลา","อ.น้ำปาด","อ.ฟากท่า","อ.บ้านโคก","อ.พิชัย","อ.ลับแล","อ.ทองแสนขัน","อ.เมืองแพร่","อ.ร้องกวาง","อ.ลอง","อ.สูงเม่น","อ.เด่นชัย","อ.สอง","อ.วังชิ้น","อ.หนองม่วงไข่","อ.เมืองน่าน","อ.แม่จริม","อ.บ้านหลวง","อ.นาน้อย","อ.ปัว","อ.ท่าวังผา","อ.เวียงสา","อ.ทุ่งช้าง","อ.เชียงกลาง","อ.นาหมื่น","อ.สันติสุข","อ.บ่อเกลือ","อ.สองแคว","อ.ภูเพียง","อ.เมืองพะเยา","อ.จุน","อ.เชียงคำ","อ.เชียงม่วน","อ.ดอกคำใต้","อ.ปง","อ.แม่ใจ","อ.ภูซาง","อ.ภูกามยาว","อ.เมืองเชียงราย","อ.เวียงชัย","อ.เชียงของ","อ.เทิง","อ.พาน","อ.ป่าแดด","อ.แม่จัน","อ.เชียงแสน","อ.แม่สาย","อ.แม่สรวย","อ.เวียงป่าเป้า","อ.พญาเม็งราย","อ.เวียงแก่น","อ.ขุนตาล","อ.แม่ฟ้าหลวง","อ.แม่ลาว","อ.เวียงเชียงรุ้ง","อ.ดอยหลวง","อ.เมืองแม่ฮ่องสอน","อ.ขุนยวม","อ.ปาย","อ.แม่สะเรียง","อ.แม่ลาน้อย","อ.สบเมย","อ.ปางมะผ้า","อ.เมืองนครสวรรค์","อ.โกรกพระ","อ.ชุมแสง","อ.หนองบัว","อ.บรรพตพิสัย","อ.เก้าเลี้ยว","อ.ตาคลี","อ.ท่าตะโก","อ.ไพศาลี","อ.พยุหะคีรี","อ.ลาดยาว","อ.ตากฟ้า","อ.แม่วงก์","อ.แม่เปิน","อ.ชุมตาบง","อ.เมืองอุทัยธานี","อ.ทัพทัน","อ.สว่างอารมณ์","อ.หนองฉาง","อ.หนองขาหย่าง","อ.บ้านไร่","อ.ลานสัก","อ.ห้วยคต","อ.เมืองกำแพงเพชร","อ.ไทรงาม","อ.คลองลาน","อ.ขาณุวรลักษบุรี","อ.คลองขลุง","อ.พรานกระต่าย","อ.ลานกระบือ","อ.ทรายทองวัฒนา","อ.ปางศิลาทอง","อ.บึงสามัคคี","อ.โกสัมพีนคร","อ.เมืองตาก","อ.บ้านตาก","อ.สามเงา","อ.แม่ระมาด","อ.ท่าสองยาง","อ.แม่สอด","อ.พบพระ","อ.อุ้มผาง","อ.วังเจ้า","อ.เมืองสุโขทัย","อ.บ้านด่านลานหอย","อ.คีรีมาศ","อ.กงไกรลาศ","อ.ศรีสัชนาลัย","อ.ศรีสำโรง","อ.สวรรคโลก","อ.ศรีนคร","อ.ทุ่งเสลี่ยม","อ.เมืองพิษณุโลก","อ.นครไทย","อ.ชาติตระการ","อ.บางระกำ","อ.บางกระทุ่ม","อ.พรหมพิราม","อ.วัดโบสถ์","อ.วังทอง","อ.เนินมะปราง","อ.เมืองพิจิตร","อ.วังทรายพูน","อ.โพธิ์ประทับช้าง","อ.ตะพานหิน","อ.บางมูลนาก","อ.โพทะเล","อ.สามง่าม","อ.ทับคล้อ","อ.สากเหล็ก","อ.บึงนาราง","อ.ดงเจริญ","อ.เมืองเพชรบูรณ์","อ.หล่มสัก","อ.หล่มเก่า","อ.วิเชียรบุรี","อ.ศรีเทพ","อ.หนองไผ่","อ.บึงสามพัน","อ.น้ำหนาว","อ.วังโป่ง",
+    "อ.เมืองราชบุรี","อ.จอมบึง","อ.สวนผึ้ง","อ.ดำเนินสะดวก","อ.บ้านโป่ง","อ.บางแพ","อ.โพธาราม","อ.ปากท่อ","อ.วัดเพลง","อ.บ้านคา","อ.เมืองกาญจนบุรี","อ.ไทรโยค","อ.บ่อพลอย","อ.ศรีสวัสดิ์","อ.ท่ามะกา","อ.ท่าม่วง","อ.ทองผาภูมิ","อ.สังขละบุรี","อ.พนมทวน","อ.เลาขวัญ","อ.ด่านมะขามเตี้ย","อ.หนองปรือ","อ.ห้วยกระเจา","อ.เมืองสุพรรณบุรี","อ.เดิมบางนางบวช","อ.ด่านช้าง","อ.บางปลาม้า","อ.ศรีประจันต์","อ.ดอนเจดีย์","อ.สองพี่น้อง","อ.สามชุก","อ.อู่ทอง","อ.หนองหญ้าไซ","อ.เมืองนครปฐม","อ.กำแพงแสน","อ.นครชัยศรี","อ.ดอนตูม","อ.บางเลน","อ.สามพราน","อ.พุทธมณฑล","อ.เมืองสมุทรสาคร","อ.กระทุ่มแบน","อ.บ้านแพ้ว","อ.เมืองสมุทรสงคราม","อ.บางคนที","อ.อัมพวา","อ.เมืองเพชรบุรี","อ.เขาย้อย","อ.หนองหญ้าปล้อง","อ.ชะอำ","อ.ท่ายาง","อ.บ้านลาด","อ.บ้านแหลม","อ.แก่งกระจาน","อ.เมืองประจวบคีรีขันธ์","อ.กุยบุรี","อ.ทับสะแก","อ.บางสะพาน","อ.บางสะพานน้อย","อ.ปราณบุรี","อ.หัวหิน","อ.สามร้อยยอด",
+    "อ.เมืองนครศรีธรรมราช","อ.พรหมคีรี","อ.ลานสกา","อ.ฉวาง","อ.พิปูน","อ.เชียรใหญ่","อ.ชะอวด","อ.ท่าศาลา","อ.ทุ่งสง","อ.นาบอน","อ.ทุ่งใหญ่","อ.ปากพนัง","อ.ร่อนพิบูลย์","อ.สิชล","อ.ขนอม","อ.หัวไทร","อ.บางขัน","อ.ถ้ำพรรณรา","อ.จุฬาภรณ์","อ.พระพรหม","อ.นบพิตำ","อ.ช้างกลาง","อ.เมืองกระบี่","อ.เขาพนม","อ.คลองท่อม","อ.อ่าวลึก","อ.ปลายพระยา","อ.ลำทับ","อ.เหนือคลอง","อ.เมืองพังงา","อ.กะปง","อ.ตะกั่วทุ่ง","อ.ตะกั่วป่า","อ.คุระบุรี","อ.ทับปุด","อ.ท้ายเหมือง","อ.เมืองภูเก็ต","อ.กะทู้","อ.ถลาง","อ.เมืองสุราษฎร์ธานี","อ.กาญจนดิษฐ์","อ.ดอนสัก","อ.ไชยา","อ.ท่าชนะ","อ.คีรีรัฐนิคม","อ.บ้านตาขุน","อ.พนม","อ.ท่าฉาง","อ.บ้านนาสาร","อ.บ้านนาเดิม","อ.เคียนซา","อ.เวียงสระ","อ.พระแสง","อ.พุนพิน","อ.ชัยบุรี","อ.วิภาวดี","อ.เมืองระนอง","อ.ละอุ่น","อ.กะเปอร์","อ.กระบุรี","อ.สุขสำราญ","อ.เมืองชุมพร","อ.ท่าแซะ","อ.ปะทิว","อ.หลังสวน","อ.ละแม","อ.พะโต๊ะ","อ.สวี","อ.ทุ่งตะโก","อ.เมืองสงขลา","อ.สทิงพระ","อ.จะนะ","อ.นาทวี","อ.เทพา","อ.สะบ้าย้อย","อ.ระโนด","อ.กระแสสินธุ์","อ.รัตภูมิ","อ.สะเดา","อ.หาดใหญ่","อ.นาหม่อม","อ.ควนเนียง","อ.บางกล่ำ","อ.สิงหนคร","อ.คลองหอยโข่ง","อ.เมืองสตูล","อ.ควนโดน","อ.ควนกาหลง","อ.ทุ่งหว้า","อ.ละงู","อ.ท่าแพ","อ.มะนัง","อ.เมืองตรัง","อ.กันตัง","อ.ย่านตาขาว","อ.ปะเหลียน","อ.สิเกา","อ.ห้วยยอด","อ.วังวิเศษ","อ.นาโยง","อ.รัษฎา","อ.หาดสำราญ","อ.เมืองพัทลุง","อ.กงหรา","อ.เขาชัยสน","อ.ตะโหมด","อ.ควนขนุน","อ.ปากพะยูน","อ.ศรีบรรพต","อ.ป่าบอน","อ.บางแก้ว","อ.ป่าพะยอม","อ.ศรีนครินทร์","อ.เมืองปัตตานี","อ.โคกโพธิ์","อ.หนองจิก","อ.ปะนาเระ","อ.มายอ","อ.ทุ่งยางแดง","อ.สายบุรี","อ.ไม้แก่น","อ.ยะหริ่ง","อ.ยะรัง","อ.กะพ้อ","อ.แม่ลาน","อ.เมืองยะลา","อ.เบตง","อ.บันนังสตา","อ.ธารโต","อ.ยะหา","อ.รามัน","อ.กาบัง","อ.กรงปินัง","อ.เมืองนราธิวาส","อ.ตากใบ","อ.บาเจาะ","อ.ยี่งอ","อ.ระแงะ","อ.รือเสาะ","อ.ศรีสาคร","อ.แว้ง","อ.สุคิริน","อ.สุไหงโก-ลก","อ.สุไหงปาดี","อ.จะแนะ","อ.เจาะไอร้อง"
+];
+
+const REGION_PROVINCES = {
+  bangkok: ["กรุงเทพมหานคร"],
+  central: ["สมุทรปราการ", "นนทบุรี", "ปทุมธานี", "พระนครศรีอยุธยา", "อ่างทอง", "ลพบุรี", "สิงห์บุรี", "ชัยนาท", "สระบุรี"],
+  north: ["เชียงใหม่", "ลำพูน", "ลำปาง", "อุตรดิตถ์", "แพร่", "น่าน", "พะเยา", "เชียงราย", "แม่ฮ่องสอน", "นครสวรรค์", "อุทัยธานี", "กำแพงเพชร", "ตาก", "สุโขทัย", "พิษณุโลก", "พิจิตร", "เพชรบูรณ์"],
+  northeast: ["นครราชสีมา", "บุรีรัมย์", "สุรินทร์", "ศรีสะเกษ", "อุบลราชธานี", "ยโสธร", "อำนาจเจริญ", "บึงกาฬ", "หนองบัวลำภู", "ขอนแก่น", "อุดรธานี", "เลย", "หนองคาย", "มหาสารคาม", "ร้อยเอ็ด", "กาฬสินธุ์", "สกลนคร", "นครพนม", "มุกดาหาร"],
+  east: ["ชลบุรี", "ระยอง", "จันทบุรี", "ตราด", "ฉะเชิงเทรา", "ปราจีนบุรี", "นครนายก", "สระแก้ว"],
+  west: ["ราชบุรี", "กาญจนบุรี", "สุพรรณบุรี", "นครปฐม", "สมุทรสาคร", "สมุทรสงคราม", "เพชรบุรี", "ประจวบคีรีขันธ์"],
+  south: ["นครศรีธรรมราช", "กระบี่", "พังงา", "ภูเก็ต", "สุราษฎร์ธานี", "ระนอง", "ชุมพร", "สงขลา", "สตูล", "ตรัง", "พัทลุง", "ปัตตานี", "ยะลา", "นราธิวาส"]
+};
+
+const THAI_DATA = { bangkok:{}, central:{}, north:{}, northeast:{}, east:{}, west:{}, south:{} };
+let currentProv = null;
+let currentReg = null;
+
+DISTRICT_POOL.forEach(dist => {
+  if (dist.startsWith("เขต")) {
+    currentProv = "กรุงเทพมหานคร";
+  } else if (dist.startsWith("อ.เมือง")) {
+    let pName = dist.replace("อ.เมือง", "");
+    if (pName === "ยาง") pName = "นครราชสีมา";
+    if (pName === "จันทร์") pName = "ศรีสะเกษ";
+    if (pName === "สรวง") pName = "ร้อยเอ็ด";
+    if (pName === "ปาน") pName = "ลำปาง";
+    currentProv = pName;
+  }
+
+  currentReg = null;
+  for (let r in REGION_PROVINCES) {
+    if (REGION_PROVINCES[r].includes(currentProv)) {
+      currentReg = r;
+      break;
+    }
+  }
+
+  if (currentReg && currentProv) {
+    if (!THAI_DATA[currentReg][currentProv]) THAI_DATA[currentReg][currentProv] = [];
+    THAI_DATA[currentReg][currentProv].push(dist);
+  }
+});
+
+// =======================================================
+// 2. Core Logic ฟังก์ชันการทำงานต่างๆ
+// =======================================================
+
+function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randomChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function applyInjections(text, doAz, doDecor, doCn) {
+  let tokens = text.split(' ');
+  if (tokens.length < 2) tokens = text.split('');
+
+  if (doAz && Math.random() < 0.7) {
+    let k = randomInt(1, 3);
+    for(let i=0; i<k; i++) tokens.splice(randomInt(1, tokens.length-1), 0, '[' + String.fromCharCode(65 + randomInt(0, 25)) + ']');
+  }
+  if (doDecor && Math.random() < 0.75) {
+    let k = randomInt(1, 4);
+    for(let i=0; i<k; i++) tokens.splice(randomInt(1, tokens.length-1), 0, randomChoice(DECOR_TOKENS));
+  }
+  if (doCn && Math.random() < 0.65) {
+    let k = randomInt(1, 3);
+    for(let i=0; i<k; i++) tokens.splice(randomInt(1, tokens.length-1), 0, randomChoice(CN_CHARS));
+  }
+  return tokens.join(' ').replace(/\s+/g, ' ').trim();
+}
+
+function generateEnglishAddress(country, useHouse, baseWords) {
+  const countries = Object.keys(EN_ADDRESS_POOLS);
+  if (!country || country === "Random") {
+      country = randomChoice(countries);
+  }
+  const pool = EN_ADDRESS_POOLS[country];
+  const city = randomChoice(pool.cities);
+  const region = randomChoice(pool.regions);
+  const street = randomChoice(pool.streets);
+  const houseNo = randomInt(1, 9999).toString();
+
+  let extra = "";
+  if (Math.random() < 0.45) {
+      extra = ", " + randomChoice(pool.extras) + " " + randomInt(1, 99);
+  }
+  const postal = randomInt(pool.postal[0], pool.postal[1]).toString();
+
+  let line1 = useHouse ? `${houseNo} ${street}${extra}` : `${street}${extra}`;
+
+  const bldgWords = ["Tower","Plaza","Residences","Heights","Centre","Court"];
+  const bldgPrefix = randomChoice(["Sunrise","Central","River","Green","Sky","Grand","Royal","Metro"]);
+
+  let parts = [line1, city, `${region} ${postal}`];
+
+  if (Math.random() < 0.5) {
+      parts.splice(1, 0, `${bldgPrefix} ${randomChoice(bldgWords)}`);
+  }
+  if (Math.random() < 0.4) {
+      const lm = randomChoice(["Near","Opp.","Behind","Next to"]);
+      const obj = randomChoice(["Mall","Station","Market","Park","School","Hospital"]);
+      parts.push(`${lm} ${randomChoice(['Central','Main','City','Grand'])} ${obj}`);
+  }
+
+  let address = parts.filter(p => p).join(", ").trim();
+
+  if (baseWords && baseWords.length > 0) {
+      address = weaveWordsIntoAddress(address, baseWords);
+  }
+  return address;
+}
+
+function weaveWordsIntoAddress(address, words) {
+  if (!words || words.length === 0) return address;
+  let tokens = address.replace(/,/g, " ,").split(" ");
+  if (tokens.length < 2) return address;
+
+  let transformed = words.map(w => {
+      if (Math.random() < 0.3) return w.replace('มิ้น', 'มินต์').replace('กันจุ', 'กันจุุ');
+      return w;
+  });
+
+  let out = [];
+  let wi = 0;
+  for (let i = 0; i < tokens.length; i++) {
+      out.push(tokens[i]);
+      if (wi < transformed.length && i > 0 && (i % Math.max(1, Math.floor(tokens.length / (transformed.length + 1)))) === 0) {
+          out.push(transformed[wi]);
+          wi++;
+      }
+  }
+  while (wi < transformed.length) {
+      out.splice(randomInt(1, Math.max(1, out.length - 1)), 0, transformed[wi]);
+      wi++;
+  }
+  return out.join(" ").replace(/ ,/g, ",").trim();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toastNotice');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.add('hidden'), 2000);
+}
+
+function clipCopy(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => showToast('✅ คัดลอกสำเร็จ!'));
+  } else {
+    let ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('✅ คัดลอกสำเร็จ!');
+  }
+}
+
+// --- ระบบบันทึกและโหลดค่า (LocalStorage) ---
+function saveSettings() {
+  const settings = {
+    freqText1: document.getElementById('freqText1').value,
+    freqText2: document.getElementById('freqText2').value,
+    freqText3: document.getElementById('freqText3').value,
+    distRegion: document.getElementById('distRegion').value,
+    distProvince: document.getElementById('distProvince').value,
+    farmCount: document.getElementById('farmCount').value,
+    farmStrength: document.getElementById('farmStrength').value,
+    farmAddrType: document.getElementById('farmAddrType').value,
+    farmBase: document.getElementById('farmBase').value,
+    chkHouse: document.getElementById('chkHouse').checked,
+    chkAz: document.getElementById('chkAz').checked,
+    chkDecor: document.getElementById('chkDecor').checked,
+    chkCn: document.getElementById('chkCn').checked,
+    chkAuto: document.getElementById('chkAuto').checked,
+  };
+  localStorage.setItem('tao_web_settings', JSON.stringify(settings));
+}
+
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem('tao_web_settings');
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (s.freqText1 !== undefined) document.getElementById('freqText1').value = s.freqText1;
+      if (s.freqText2 !== undefined) document.getElementById('freqText2').value = s.freqText2;
+      if (s.freqText3 !== undefined) document.getElementById('freqText3').value = s.freqText3;
+      if (s.distRegion !== undefined) {
+        document.getElementById('distRegion').value = s.distRegion;
+        onRegionChange();
+      }
+      if (s.distProvince !== undefined) document.getElementById('distProvince').value = s.distProvince;
+      if (s.farmCount !== undefined) document.getElementById('farmCount').value = s.farmCount;
+      if (s.farmStrength !== undefined) document.getElementById('farmStrength').value = s.farmStrength;
+      if (s.farmAddrType !== undefined) document.getElementById('farmAddrType').value = s.farmAddrType;
+      if (s.farmBase !== undefined) document.getElementById('farmBase').value = s.farmBase;
+      if (s.chkHouse !== undefined) document.getElementById('chkHouse').checked = s.chkHouse;
+      if (s.chkAz !== undefined) document.getElementById('chkAz').checked = s.chkAz;
+      if (s.chkDecor !== undefined) document.getElementById('chkDecor').checked = s.chkDecor;
+      if (s.chkCn !== undefined) document.getElementById('chkCn').checked = s.chkCn;
+      if (s.chkAuto !== undefined) {
+        document.getElementById('chkAuto').checked = s.chkAuto;
+        toggleAuto();
+      }
+    }
+  } catch(e) {}
+}
+
+// --- ฝั่งซ้าย: แสดงลิสต์อำเภอทั้งหมด (เอาชื่อจังหวัดออกแล้ว) ---
+function onRegionChange() {
+  const region = document.getElementById('distRegion').value;
+  const provRow = document.getElementById('distProvinceRow');
+  const provSelect = document.getElementById('distProvince');
+
+  provSelect.innerHTML = '<option value="">ทั้งภาค</option>';
+
+  if (region === 'all' || region === 'bangkok') {
+    provRow.classList.add('hidden');
+    return;
+  }
+
+  provRow.classList.remove('hidden');
+  const provinces = Object.keys(THAI_DATA[region] || {});
+  provinces.forEach(p => {
+    let opt = document.createElement('option');
+    opt.value = p;
+    opt.textContent = p;
+    provSelect.appendChild(opt);
+  });
+}
+
+let _lastDistrictList = [];
+
+function listAllDistricts() {
+  const region = document.getElementById('distRegion').value;
+  const province = document.getElementById('distProvince').value;
+
+  let results = [];
+
+  if (region === 'all') {
+    Object.keys(THAI_DATA).forEach(reg => {
+      Object.keys(THAI_DATA[reg]).forEach(prov => {
+        THAI_DATA[reg][prov].forEach(dist => {
+          results.push(dist);
+        });
+      });
+    });
+  } else if (province === '') {
+    Object.keys(THAI_DATA[region]).forEach(prov => {
+      THAI_DATA[region][prov].forEach(dist => {
+        results.push(dist);
+      });
+    });
+  } else {
+    THAI_DATA[region][province].forEach(dist => {
+      results.push(dist);
+    });
+  }
+
+  if(results.length === 0) return alert("ไม่พบข้อมูลอำเภอ");
+
+  _lastDistrictList = results;
+
+  document.getElementById('distCountBadge').textContent = results.length + ' รายการ';
+
+  const box = document.getElementById('distResultBox');
+  box.innerHTML = '';
+
+  results.forEach((displayText, idx) => {
+    let row = document.createElement('div');
+    row.className = 'result-item-row';
+    row.innerHTML = `
+      <span class="result-item-text"><span style="color:var(--text-dim);">#${idx+1}</span> &nbsp; ${displayText}</span>
+      <button class="row-copy-btn" onclick="clipCopy('${displayText}')">📋</button>
+    `;
+    box.appendChild(row);
+  });
+}
+
+function copyAllDistricts() {
+  if (_lastDistrictList.length === 0) return alert("ยังไม่ได้แสดงข้อมูลอำเภอครับ");
+  clipCopy(_lastDistrictList.join('\n'));
+}
+
+
+// --- ฝั่งขวา: สุ่มชุดข้อมูลหลัก (Farm Core Generator) ---
+let _lastFarmData = [];
+
+function generateFarmData() {
+  const count = parseInt(document.getElementById('farmCount').value) || 1;
+  const baseText = document.getElementById('farmBase').value.trim();
+  const addrType = document.getElementById('farmAddrType').value;
+  const useHouse = document.getElementById('chkHouse').checked;
+  const doAz = document.getElementById('chkAz').checked;
+  const doDecor = document.getElementById('chkDecor').checked;
+  const doCn = document.getElementById('chkCn').checked;
+
+  const baseWords = baseText ? baseText.split(/\s+/) : [];
+
+  _lastFarmData = [];
+  let notepadText = "===== 📱 ข้อมูลจัดส่ง =====\n";
+
+  for(let i=0; i<count; i++) {
+    let phone = randomChoice(PHONE_PREFIX) + randomInt(1000000, 9999999);
+    let finalAddr = "";
+
+    if (addrType === "th") {
+        let addrBase = baseText ? baseText : randomChoice(DEFAULT_BASES);
+        if(Math.random() < 0.3) addrBase = addrBase.replace('มิ้น', 'มินต์').replace('กันจุ', 'กันจุุ');
+        if(useHouse) addrBase = randomInt(1, 999) + '/' + randomInt(1, 99) + ' ' + addrBase;
+
+        finalAddr = applyInjections(addrBase, doAz, doDecor, doCn);
+    } else {
+        let country = "Random";
+        if (addrType === "en_id") country = "Indonesia";
+        if (addrType === "en_ph") country = "Philippines";
+        if (addrType === "en_my") country = "Malaysia";
+        if (addrType === "en_vn") country = "Vietnam";
+        if (addrType === "en_us") country = "United States";
+
+        let addrBase = generateEnglishAddress(country, useHouse, baseWords);
+        finalAddr = applyInjections(addrBase, doAz, doDecor, doCn);
+    }
+
+    let fullLine = phone + " | " + finalAddr;
+    _lastFarmData.push({ phone: phone, addr: finalAddr, full: fullLine });
+    notepadText += (i+1) + ". " + fullLine + "\n";
+  }
+
+  document.getElementById('farmNotepad').value = notepadText;
+  document.getElementById('farmBadge').textContent = count + ' ชุด';
+
+  const box = document.getElementById('farmResultBox');
+  box.innerHTML = '';
+  _lastFarmData.forEach((item, idx) => {
+    let row = document.createElement('div');
+    row.className = 'result-item-row';
+    row.innerHTML = `
+      <span class="result-item-text" style="line-height:1.4;">
+        <span style="color:#00ff88">${item.phone}</span><br>${item.addr}
+      </span>
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <button class="row-copy-btn" onclick="clipCopy('${item.phone}')" style="background:rgba(0,255,136,0.1); border-color:#00ff88; color:#00ff88;">📱 เบอร์</button>
+        <button class="row-copy-btn" onclick="clipCopy('${item.addr}')" style="background:rgba(255,200,0,0.1); border-color:#ffcc00; color:#ffcc00;">🏠 ที่อยู่</button>
+        <button class="row-copy-btn" onclick="clipCopy('${item.full}')">📋 ทั้งคู่</button>
+      </div>
+    `;
+    box.appendChild(row);
+  });
+
+  const qrBox = document.getElementById('farmQrSection');
+  if(!qrBox.classList.contains('hidden')) {
+    qrBox.innerHTML = '';
+    QRCode.toCanvas('📋\n' + notepadText, { width: 220, margin: 2 }, function(err, canvas) {
+      if(!err) qrBox.appendChild(canvas);
+    });
+  }
+}
+
+function copyNotepad() { clipCopy(document.getElementById('farmNotepad').value); }
+
+function toggleFarmQR() {
+  const qrBox = document.getElementById('farmQrSection');
+  qrBox.classList.toggle('hidden');
+  if(!qrBox.classList.contains('hidden') && _lastFarmData.length > 0) {
+    qrBox.innerHTML = '';
+    QRCode.toCanvas('📋\n' + document.getElementById('farmNotepad').value, { width: 220, margin: 2 }, function(err, canvas) {
+      if(!err) qrBox.appendChild(canvas);
+    });
+  }
+}
+
+// --- ระบบ Auto Random ---
+let autoInterval = null;
+let countdownInterval = null;
+let secondsLeft = 60;
+
+function toggleAuto() {
+  const chk = document.getElementById('chkAuto');
+  if(chk.checked) {
+    secondsLeft = 60;
+    generateFarmData();
+    updateTimerUI();
+
+    autoInterval = setInterval(() => { secondsLeft = 60; generateFarmData(); }, 60000);
+    countdownInterval = setInterval(() => {
+      secondsLeft--;
+      if(secondsLeft < 0) secondsLeft = 0;
+      updateTimerUI();
+    }, 1000);
+  } else {
+    clearInterval(autoInterval);
+    clearInterval(countdownInterval);
+    document.getElementById('autoCountdown').textContent = "--:--";
+  }
+}
+
+function updateTimerUI() {
+  let m = Math.floor(secondsLeft / 60);
+  let s = secondsLeft % 60;
+  document.getElementById('autoCountdown').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+// เริ่มต้นเปิดเว็บ
+window.onload = function() {
+  loadSettings(); // โหลดค่าที่เซ็ตไว้เดิม
+  onRegionChange();
+  listAllDistricts();
+};
+</script>
+
+</body>
+</html>
