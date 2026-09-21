@@ -523,7 +523,9 @@ function clipCopy(text) {
   }
 }
 
-// --- ระบบบันทึกและโหลดค่า (LocalStorage) ---
+// =======================================================
+// 5. จัดการ LocalStorage บันทึกค่า
+// =======================================================
 function saveSettings() {
   const settings = {
     freqText1: document.getElementById('freqText1').value,
@@ -570,7 +572,9 @@ function loadSettings() {
   } catch(e) {}
 }
 
-// --- แสดงลิสต์อำเภอทันทีเมื่อเปลี่ยนภาค ---
+// =======================================================
+// 6. ควบคุมรายชื่ออำเภอ/เขต (แสดงผลทันทีเมื่อเลือก)
+// =======================================================
 function onRegionChange() {
   const region = document.getElementById('distRegion').value;
   const provRow = document.getElementById('distProvinceRow');
@@ -591,11 +595,9 @@ function onRegionChange() {
     });
   }
 
-  // อัปเดตแสดงรายชื่อทันที
+  // อัปเดตแสดงผลทันทีเมื่อเปลี่ยนภูมิภาค
   listAllDistricts();
 }
-
-let _lastDistrictList = [];
 
 function listAllDistricts() {
   const region = document.getElementById('distRegion').value;
@@ -623,8 +625,6 @@ function listAllDistricts() {
     });
   }
 
-  _lastDistrictList = results;
-
   const countBadge = document.getElementById('distCountBadge');
   if (countBadge) countBadge.textContent = results.length + ' รายการ';
 
@@ -638,6 +638,7 @@ function listAllDistricts() {
   }
 
   results.forEach((displayText, idx) => {
+    // ตัด อ. ออกทันทีเมื่อคัดลอก เช่น "อ.บางระจัน" -> "บางระจัน"
     const cleanCopyText = displayText.replace(/^อ\.\s*/, '');
     let row = document.createElement('div');
     row.className = 'result-item-row';
@@ -649,7 +650,9 @@ function listAllDistricts() {
   });
 }
 
-// --- สุ่มชุดข้อมูลหลัก (Farm Core Generator) ---
+// =======================================================
+// 7. สุ่มชุดข้อมูล Farm Core (ทำงานออโต้ตลอดเวลา)
+// =======================================================
 let _lastFarmData = [];
 
 function generateFarmData() {
@@ -745,7 +748,7 @@ function toggleFarmQR() {
   }
 }
 
-// --- ระบบ Auto Timer 1 นาทีต่อเนื่อง ---
+// ระบบ Auto Timer 1 นาทีต่อเนื่อง
 let autoInterval = null;
 let countdownInterval = null;
 let secondsLeft = 60;
